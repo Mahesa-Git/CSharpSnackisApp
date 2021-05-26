@@ -1,4 +1,53 @@
 ﻿@page
 @model CSharpSnackisApp.Pages.TopicViewModel
 @{
+    ViewData["Title"] = "Ämnen";
 }
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+
+                <div class="ibox-content m-b-sm border-bottom">
+                    <div class="p-xs">
+                        <div class="pull-left m-r-md">
+                            <i class="fa fa-globe text-navy mid-icon"></i>
+                        </div>
+                        <h2>C#-Snackis - Rätt plats för diskussioner om programmering</h2>
+                        <span>Välj ett ämne</span>
+                    </div>
+                </div>
+                <div class="ibox-content forum-container">
+                    <div class="forum-title">
+                        <div class="pull-right forum-desc">
+                            <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
+
+                        </div>
+                        <h3>Ämnen</h3>
+                    </div>
+                    @if (Model.Message is not null)
+                    {
+                        <p>@Model.Message</p>
+                    }
+                    else
+                    {
+                        @foreach (var subject in Model._topicResponseModels)
+                        {
+                            <div class="forum-item active">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="forum-icon">
+                                            <i class="fa fa-shield"></i>
+                                        </div>
+                                        <a href="/TopicView?=@subject.topicID" class="forum-item-title">@subject.title</a>
+                                        <div class="forum-sub-title">@subject.createDate</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,7 +1,7 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Startsida - Kategorier";
 }
 <div class="container">
     <div class="row">
@@ -14,7 +14,7 @@
                             <i class="fa fa-globe text-navy mid-icon"></i>
                         </div>
                         <h2>C#-Snackis - Rätt plats för diskussioner om programmering</h2>
-                        <span>Välj ett ämne</span>
+                        <span>Välj en kategori</span>
                     </div>
                 </div>
                 <div class="ibox-content forum-container">
@@ -23,7 +23,7 @@
                             <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
                             
                         </div>
-                        <h3>Ämnen</h3>
+                        <h3>Kategorier</h3>
                     </div>
                     @if (Model.Message is not null)
                     {
@@ -39,7 +39,7 @@
                                         <div class="forum-icon">
                                             <i class="fa fa-shield"></i>
                                         </div>
-                                        <a href="/TopicView?=@subject.categoryID" class="forum-item-title">@subject.title</a>
+                                        <a asp-page="/TopicView" asp-route-categoryID="@subject.categoryID" class="forum-item-title">@subject.title</a>
                                         <div class="forum-sub-title">@subject.description</div>
                                     </div>
                                 </div>
