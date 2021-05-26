@@ -2,3 +2,37 @@
 @model CSharpSnackisApp.Pages.LogInViewModel
 @{
 }
+<div class="sidenav">
+    <div class="login-main-text">
+        <h2 class="text-white text-center">Inloggning<br></h2>
+        <p class="text-white text-center">Logga in dig här!</p>
+    </div>
+</div>
+<div class="main">
+        <div class="col-md-6 col-sm-12">
+            <div class="login-form">
+                <form method="post" autocomplete="off">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label class="control-label">Användarnamn</label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                        @if (!string.IsNullOrEmpty(Model.Message))
+                        {
+                            <p class="text-danger">@Model.Message</p>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Lösenord</label>
+                        <input asp-for="Password" type="password" class="form-control" pattern=".{8,}" required title="Minst 8 tecken" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <input style="width : 200px" type="submit" value="Logga in" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+</div>
