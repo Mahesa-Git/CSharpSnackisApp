@@ -8,7 +8,7 @@ namespace CSharpSnackisApp.Services
 {
     public class SnackisAPI
     {
-        public HttpClient InitClient { get; init; }
+        public HttpClient InitClient { get; set; }
         public SnackisAPI()
         {
             InitClient = new HttpClient

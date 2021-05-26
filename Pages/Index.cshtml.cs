@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CSharpSnackisApp.Models.ResponseModels;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +13,30 @@ namespace CSharpSnackisApp.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly HttpClient _client;
+        private HttpClient _client = new HttpClient();
         private readonly ILogger<IndexModel> _logger;
-        public IndexModel(ILogger<IndexModel> logger, HttpClient client)
+        private CategoryResponseModel _categoryResponseModel;
+        public string Message { get; set; }
+        public IndexModel(ILogger<IndexModel> logger, CategoryResponseModel categoryResponseModel)
         {
             _logger = logger;
-            _client = client;
+            _categoryResponseModel = categoryResponseModel;
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
 
+            HttpResponseMessage response = await _client.GetAsync("/Post/ReadCategory");
+            string request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                _categoryResponseModel = JsonConvert.DeserializeObject<CategoryResponseModel>(request);
+            
+                return Page();
+            }
+
+            return RedirectToPage("/Error");
         }
     }
 }
