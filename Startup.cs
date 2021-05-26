@@ -29,6 +29,7 @@ namespace CSharpSnackisApp
 
             services.AddTransient<CategoryResponseModel>();
             services.AddHttpClient<SnackisAPI>();
+            
             //services.AddSingleton<IBar, Bar>();
             //services.AddScoped<IHello, Hello>();
 

@@ -2,17 +2,13 @@
 
 namespace CSharpSnackisApp.Models.ResponseModels
 {
+
     public class CategoryResponseModel
     {
-        public Category[] Categories { get; set; }
-    }
-
-    public class Category
-    {
-        public string CategoryID { get; set; }
-        public object Topics { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public DateTime CreateDate { get; set; }
+        public string categoryID { get; set; }
+        public object topics { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public DateTime createDate { get; set; }
     }
 }

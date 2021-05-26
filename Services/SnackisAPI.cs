@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -6,16 +7,11 @@ using System.Threading.Tasks;
 
 namespace CSharpSnackisApp.Services
 {
-    public class SnackisAPI
+    public class SnackisAPI : HttpClient
     {
-        public HttpClient InitClient { get; set; }
-        public SnackisAPI()
+        public SnackisAPI(HttpClient client) : base()
         {
-            InitClient = new HttpClient
-            {
-                BaseAddress = new Uri("http://localhost:44302")
-            };
+            BaseAddress = new Uri("https://localhost:44302");
         }
-
     }
 }

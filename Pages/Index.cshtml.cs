@@ -1,4 +1,5 @@
 ﻿using CSharpSnackisApp.Models.ResponseModels;
+using CSharpSnackisApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -13,30 +14,30 @@ namespace CSharpSnackisApp.Pages
 {
     public class IndexModel : PageModel
     {
-        private HttpClient _client = new HttpClient();
+        
         private readonly ILogger<IndexModel> _logger;
-        private CategoryResponseModel _categoryResponseModel;
+        public List<CategoryResponseModel> _categoryResponseModel { get; set; }
+        private readonly SnackisAPI _client;
         public string Message { get; set; }
-        public IndexModel(ILogger<IndexModel> logger, CategoryResponseModel categoryResponseModel)
+        public IndexModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
             _logger = logger;
-            _categoryResponseModel = categoryResponseModel;
+            _client = client;
         }
 
         public async Task<IActionResult> OnGetAsync()
-        {
-
-            HttpResponseMessage response = await _client.GetAsync("/Post/ReadCategory");
-            string request = response.Content.ReadAsStringAsync().Result;
+        {    
+            HttpResponseMessage response = await _client.GetAsync("Post/ReadCategory");
+            var request = response.Content.ReadAsStringAsync().Result;
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                _categoryResponseModel = JsonConvert.DeserializeObject<CategoryResponseModel>(request);
+                _categoryResponseModel = JsonConvert.DeserializeObject<List<CategoryResponseModel>>(request);
             
                 return Page();
             }
-
-            return RedirectToPage("/Error");
+            else
+                return RedirectToPage("/Error");
         }
     }
 }
