@@ -1,7 +1,7 @@
 ﻿@page
-@model CSharpSnackisApp.Pages.TopicViewModel
+@model CSharpSnackisApp.Pages.ThreadViewModel
 @{
-    ViewData["Title"] = "Ämnen";
+
 }
 <div class="container">
     <div class="row">
@@ -13,8 +13,8 @@
                         <div class="pull-left m-r-md">
                             <i class="fa fa-globe text-navy mid-icon"></i>
                         </div>
-                        <h2>C#-Snackis - Rätt plats för diskussioner om programmering</h2>
-                        <span>Välj ett ämne</span>
+                        <h2>C#-Snackis - Rätt plats för diskussioner om alpha hobbys</h2>
+                        <span>Välj en tråd</span>
                     </div>
                 </div>
                 <div class="ibox-content forum-container">
@@ -23,7 +23,7 @@
                             <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
 
                         </div>
-                        <h3>Ämnen</h3>
+                        <h3>Trådar</h3>
                     </div>
                     @if (Model.Message is not null)
                     {
@@ -31,7 +31,7 @@
                     }
                     else
                     {
-                        @foreach (var subject in Model._topicResponseModels)
+                        @foreach (var subject in Model._threadResponseModels)
                         {
                             <div class="forum-item active">
                                 <div class="row">
@@ -39,8 +39,9 @@
                                         <div class="forum-icon">
                                             <i class="fa fa-shield"></i>
                                         </div>
-                                        <a asp-page="/ThreadView" asp-route-topicID="@subject.topicID" class="forum-item-title">@subject.title</a>
-                                        <div class="forum-sub-title">@subject.createDate</div>
+                                        <a href="/TopicView?=@subject.threadID" class="forum-item-title">@subject.title</a>
+                                        <div class="forum-sub-title">@subject.bodyText</div>
+                                        <div class="forum-sub-title">@subject.user</div>
                                     </div>
                                 </div>
                             </div>
