@@ -12,32 +12,40 @@ using Newtonsoft.Json;
 
 namespace CSharpSnackisApp.Pages
 {
-    public class ThreadViewModel : PageModel
+    public class PostAndReplyViewModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        public List<ThreadResponseModel> _threadResponseModels { get; set; }
+        public List<PostResponseModel> _postResponseModel { get; set; }
+        public List<ReplyResponseModel> _replyResponseModel { get; set; }
         private readonly SnackisAPI _client;
         public string Message { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public string TopicID { get; set; }
+        public string ThreadID { get; set; }
 
-        public ThreadViewModel(ILogger<IndexModel> logger, SnackisAPI client)
+        public PostAndReplyViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
             _logger = logger;
             _client = client;
         }
-
         public async Task<IActionResult> OnGetAsync()
         {
-            HttpResponseMessage response = await _client.GetAsync($"/Post/ReadThreadsInTopic/{TopicID}");
+            HttpResponseMessage response = await _client.GetAsync($"/Post/ReadPostsInThread/{ThreadID}");
             var request = response.Content.ReadAsStringAsync().Result;
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                _threadResponseModels = JsonConvert.DeserializeObject<List<ThreadResponseModel>>(request);
+                _postResponseModel = JsonConvert.DeserializeObject<List<PostResponseModel>>(request);
 
+                foreach (var post in _postResponseModel)
+                {
+                    response = await _client.GetAsync($"/Post/ReadRepliesToPost/{post.postID}");
+                    request = response.Content.ReadAsStringAsync().Result;
+                    _replyResponseModel = JsonConvert.DeserializeObject<List<ReplyResponseModel>>(request);
+                    post.replies = _replyResponseModel;
+                }
                 return Page();
+
             }
             else
                 return RedirectToPage("/Error");

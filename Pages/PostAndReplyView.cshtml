@@ -1,7 +1,6 @@
 ﻿@page
-@model CSharpSnackisApp.Pages.ThreadViewModel
+@model CSharpSnackisApp.Pages.PostAndReplyViewModel
 @{
-
 }
 <div class="container">
     <div class="row">
@@ -23,7 +22,7 @@
                             <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
 
                         </div>
-                        <h3>Trådar</h3>
+                        <h3>Tråd</h3>
                     </div>
                     @if (Model.Message is not null)
                     {
@@ -31,7 +30,7 @@
                     }
                     else
                     {
-                        @foreach (var subject in Model._threadResponseModels)
+                        @foreach (var subject in Model._postResponseModel)
                         {
                             <div class="forum-item active">
                                 <div class="row">
@@ -39,12 +38,27 @@
                                         <div class="forum-icon">
                                             <i class="fa fa-shield"></i>
                                         </div>
-                                        <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title</a>
+                                        <div class="forum-sub-title">@subject.title</div>
                                         <div class="forum-sub-title">@subject.bodyText</div>
                                         <div class="forum-sub-title">@subject.user</div>
                                     </div>
                                 </div>
                             </div>
+                            @if (subject.replies.Count > 0 || subject.replies is not null)
+                            {
+                                foreach (var reply in subject.replies)
+                                {
+                                    <div class="forum-item active">
+                                        <div class="row">
+                                            <div class="col-md-9">                                              
+                                                <div class="forum-sub-title">@reply.bodyText</div>
+                                                <div class="forum-sub-title">@reply.createDate</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            }
                         }
                     }
                 </div>
