@@ -1,4 +1,5 @@
 using CSharpSnackisApp.Models.ResponseModels;
+using CSharpSnackisApp.Models.Toolbox;
 using CSharpSnackisApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -62,20 +63,20 @@ namespace CSharpSnackisApp.Pages
             else
             {
                 LoginResponseModel result = JsonConvert.DeserializeObject<LoginResponseModel>(request);
-                //TokenChecker.UserName = userName;
-                //ToolBox.LoggedInUserID = result.UserID;
-                //ToolBox.ActiveRole = result.Role;
+                TokenChecker.UserName = Username;
+                TokenChecker.LoggedInUserID = result.UserID;
+                TokenChecker.ActiveRole = result.Role;
 
                 byte[] tokenInByte = Encoding.ASCII.GetBytes(result.Token);
 
                 HttpContext.Session.Set("_token", tokenInByte);
-                //HttpContext.Session.SetString("Id", result.UserID);
+                HttpContext.Session.SetString("Id", result.UserID);
 
             }
-            //if (response.IsSuccessStatusCode)
-            //    TokenChecker.UserStatus = true;
-            //else
-            //    TokenChecker.UserStatus = false;
+            if (response.IsSuccessStatusCode)
+                TokenChecker.UserStatus = true;
+            else
+                TokenChecker.UserStatus = false;
 
             return RedirectToPage("/index");
         }
