@@ -7,6 +7,7 @@ namespace CSharpSnackisApp.Models.Toolbox
 {
     public static class TokenChecker
     {
+        public static string TokenName = "_Token";
         public static string LoggedInUserID { get; set; }
         public static string userID { get; set; }
         public static string ActiveRole { get; set; }

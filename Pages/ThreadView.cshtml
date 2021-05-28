@@ -25,6 +25,36 @@
                         </div>
                         <h3>Trådar</h3>
                     </div>
+                    <div class="forum-title">
+                        <div class="forum-title">
+                            <input type="checkbox" id="switch1" class="custom-control-input" name="c1" onclick="showMe('div1')">
+                            <label style="padding-left: 30px" class="custom-control-label" for="switch1">Skapa ny tråd</label>
+                        </div>
+
+                        <div id="div1">
+                            <form method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group" style="visibility: hidden">
+                                    <input asp-for="TopicID" class="form-control" value="@Model.TopicID" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Titel</label>
+                                    <input asp-for="Title" class="form-control" autocomplete="off"/>
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Inläggstext</label>
+                                    <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
+                                    <span asp-validation-for="BodyText" class="text-danger"></span>
+                                </div>
+                                <button class="btn btn-dark" type="submit">Skapa ny tråd</button>
+                            </form>
+                        </div>
+                    </div>
                     @if (Model.Message is not null)
                     {
                         <p>@Model.Message</p>

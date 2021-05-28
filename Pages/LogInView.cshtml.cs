@@ -69,7 +69,7 @@ namespace CSharpSnackisApp.Pages
 
                 byte[] tokenInByte = Encoding.ASCII.GetBytes(result.Token);
 
-                HttpContext.Session.Set("_token", tokenInByte);
+                HttpContext.Session.Set(TokenChecker.TokenName, tokenInByte);
                 HttpContext.Session.SetString("Id", result.UserID);
 
             }
