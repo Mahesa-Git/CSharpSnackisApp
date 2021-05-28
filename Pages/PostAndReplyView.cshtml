@@ -24,6 +24,38 @@
                         </div>
                         <h3>Tråd</h3>
                     </div>
+
+                    <div class="forum-title">
+                        <div class="forum-title">
+                            <input type="checkbox" id="switch1" class="custom-control-input" name="c1" onclick="showMe('div1')">
+                            <label style="padding-left: 30px" class="custom-control-label" for="switch1">Skapa en ny post i tråden.</label>
+                        </div>
+
+                        <div id="div1">
+                            <form asp-page-handler="Post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group" style="visibility: hidden">
+                                    <input asp-for="ThreadID" class="form-control" value="@Model.ThreadID" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Titel</label>
+                                    <input asp-for="Title" class="form-control" autocomplete="off" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Inläggstext</label>
+                                    <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
+                                    <span asp-validation-for="BodyText" class="text-danger"></span>
+                                </div>
+                                <button class="btn btn-dark" type="submit">Skapa ny post</button>
+                            </form>
+                        </div>
+                    </div>
+
                     @if (Model.Message is not null)
                     {
                         <p>@Model.Message</p>
@@ -32,25 +64,46 @@
                     {
                         @foreach (var subject in Model._postResponseModel)
                         {
-                            <div class="forum-item active">
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <div class="forum-icon">
-                                            <i class="fa fa-shield"></i>
-                                        </div>
-                                        <div class="forum-sub-title">@subject.title</div>
-                                        <div class="forum-sub-title">@subject.bodyText</div>
-                                        <div class="forum-sub-title">@subject.user</div>
-                                    </div>
-                                </div>
+                <div class="forum-item active">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="forum-icon">
+                                <i class="fa fa-shield"></i>
                             </div>
+                            <div class="forum-sub-title">@subject.title</div>
+                            <div class="forum-sub-title">@subject.bodyText</div>
+                            <div class="forum-sub-title">@subject.user</div>
+                        </div>
+                    </div>
+
+
+                    <div class="forum-title">
+                            <form asp-page-handler="Reply">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group" style="visibility: hidden">
+                                    <input asp-for="PostID" class="form-control" value="@subject.postID" />
+                                    <span asp-validation-for="PostID" class="text-danger"></span>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="control-label">Skriv ett svar.</label>
+                                    <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
+                                    <span asp-validation-for="BodyText" class="text-danger"></span>
+                                </div>
+                                <button class="btn btn-dark" type="submit">Svara</button>
+                            </form>
+                        
+                    </div>
+                </div>
                             @if (subject.replies.Count > 0 || subject.replies is not null)
                             {
                                 foreach (var reply in subject.replies)
                                 {
-                                    <div class="forum-item active">
+                                    <div class="forum-item active" style="padding-left: 50px">
                                         <div class="row">
-                                            <div class="col-md-9">                                              
+                                            <div class="col-md-9">
                                                 <div class="forum-sub-title">@reply.bodyText</div>
                                                 <div class="forum-sub-title">@reply.createDate</div>
                                             </div>

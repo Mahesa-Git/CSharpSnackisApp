@@ -6,6 +6,7 @@ window.onload = function () {
     document.getElementById("div1").style.display = 'none';
 }
 
+
 function showMe(box) {
     var chboxs = document.getElementsByName("c1");
     var vis = "none";
@@ -18,3 +19,4 @@ function showMe(box) {
     }
     document.getElementById(box).style.display = vis;
 }
+
