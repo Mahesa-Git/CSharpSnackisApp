@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -55,7 +57,7 @@ namespace CSharpSnackisApp.Pages
                 _postResponseModel = JsonConvert.DeserializeObject<List<PostResponseModel>>(request);
 
                 foreach (var post in _postResponseModel)
-                {
+                {                  
                     response = await _client.GetAsync($"/Post/ReadRepliesToPost/{post.postID}");
                     request = response.Content.ReadAsStringAsync().Result;
                     _replyResponseModel = JsonConvert.DeserializeObject<List<ReplyResponseModel>>(request);

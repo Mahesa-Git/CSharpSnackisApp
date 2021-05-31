@@ -64,46 +64,56 @@
                     {
                         @foreach (var subject in Model._postResponseModel)
                         {
-                <div class="forum-item active">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-shield"></i>
+                            <div class="forum-item active">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="forum-icon">
+                                            <i class="fa fa-shield"></i>
+                                        </div>
+                                        <div class="img-thumbnail">
+                                            <!--här ska image in-->
+                                            <image src="img/@subject.user.Image"></image>
+                                        </div>
+                                        <div class="forum-sub-title">@subject.user.UserName</div>
+                                        <div class="forum-sub-title">@subject.title</div>
+                                        <div class="forum-sub-title">@subject.bodyText</div>
+                                        <div class="forum-sub-title">@subject.createDate</div>
+                                    </div>
+                                </div>
+
+
+                                <div class="forum-title">
+                                    <form asp-page-handler="Reply">
+                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                        <div class="form-group" style="visibility: hidden">
+                                            <input asp-for="PostID" class="form-control" value="@subject.postID" />
+                                            <span asp-validation-for="PostID" class="text-danger"></span>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label class="control-label">Skriv ett svar.</label>
+                                            <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
+                                            <span asp-validation-for="BodyText" class="text-danger"></span>
+                                        </div>
+                                        <button class="btn btn-dark" type="submit">Svara</button>
+                                    </form>
+
+                                </div>
                             </div>
-                            <div class="forum-sub-title">@subject.title</div>
-                            <div class="forum-sub-title">@subject.bodyText</div>
-                            <div class="forum-sub-title">@subject.user</div>
-                        </div>
-                    </div>
-
-
-                    <div class="forum-title">
-                            <form asp-page-handler="Reply">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                                <div class="form-group" style="visibility: hidden">
-                                    <input asp-for="PostID" class="form-control" value="@subject.postID" />
-                                    <span asp-validation-for="PostID" class="text-danger"></span>
-                                </div>
-
-
-                                <div class="form-group">
-                                    <label class="control-label">Skriv ett svar.</label>
-                                    <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
-                                    <span asp-validation-for="BodyText" class="text-danger"></span>
-                                </div>
-                                <button class="btn btn-dark" type="submit">Svara</button>
-                            </form>
-                        
-                    </div>
-                </div>
                             @if (subject.replies.Count > 0 || subject.replies is not null)
                             {
                                 foreach (var reply in subject.replies)
                                 {
+                                    <div class="img-thumbnail">
+                                        <!--här ska image in-->
+                                        <image src="img/@reply.user.Image"></image>
+                                    </div>
                                     <div class="forum-item active" style="padding-left: 50px">
                                         <div class="row">
                                             <div class="col-md-9">
+                                                <div class="forum-sub-title">@reply.user.UserName</div>
                                                 <div class="forum-sub-title">@reply.bodyText</div>
                                                 <div class="forum-sub-title">@reply.createDate</div>
                                             </div>

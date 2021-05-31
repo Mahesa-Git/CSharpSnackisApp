@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace CSharpSnackisApp.Models.Entities
         public string Password { get; set; }
         public string Country { get; set; }
         public string MailToken { get; set; }
+        public string Image { get; set; }
         public DateTime CreateDate { get; set; }
         public string ProfileText { get; set; }
         public bool IsBanned { get; set; }

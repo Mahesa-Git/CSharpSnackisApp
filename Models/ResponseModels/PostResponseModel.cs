@@ -9,6 +9,7 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public string postID { get; set; }
         public string title { get; set; }
         public string bodyText { get; set; }
+        public string image { get; set; }
         public DateTime createDate { get; set; }
         public bool isReported { get; set; }
         public User user { get; set; }

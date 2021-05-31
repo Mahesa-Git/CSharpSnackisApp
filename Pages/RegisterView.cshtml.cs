@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -7,14 +9,17 @@ using System.Threading.Tasks;
 using CSharpSnackisApp.Models;
 using CSharpSnackisApp.Models.Entities;
 using CSharpSnackisApp.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CSharpSnackisApp.Pages
 {
     public class RegisterViewModel : PageModel
     {
+        public string Message { get; set; }
         private readonly SnackisAPI _client;
         public string ErrorMessage { get; set; }
         public string MessageUserName { get; set; }
@@ -22,6 +27,9 @@ namespace CSharpSnackisApp.Pages
 
         [BindProperty]
         public RegisterModel User { get; set; }
+
+        [BindProperty]
+        public IFormFile UploadFile { get; set; }
 
         public RegisterViewModel(SnackisAPI client)
         {
@@ -33,12 +41,32 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostAsync()
         {
+            if (UploadFile != null)
+            {
+                var file = "./wwwroot/img/" + UploadFile.FileName;
+                var fileNameDoubleCheck = Directory.GetFiles("./wwwroot/img/");
+                foreach (var item in fileNameDoubleCheck)
+                {
+                    if (item == file)
+                    {
+                        Message = "Välj en annan bild";
+                        return Page();
+                    }
+                }
+
+                using (var fileStream = new FileStream(file, FileMode.Create))
+                {
+                    User.Image = UploadFile.FileName;
+                    await UploadFile.CopyToAsync(fileStream);
+                }
+            }
             var values = new Dictionary<string, string>()
                  {
                     {"username", $"{User.Username}"},
                     {"email", $"{User.Email}"},
                     {"password", $"{User.Password}"},
-                    {"country", $"{User.Country}"},   
+                    {"country", $"{User.Country}"},
+                    {"image", $"{User.Image}" }
                  };
             string payload = JsonConvert.SerializeObject(values);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
