@@ -41,6 +41,15 @@
                                         </div>
                                         <a asp-page="/TopicView" asp-route-categoryID="@subject.categoryID" class="forum-item-title">@subject.title</a>
                                         <div class="forum-sub-title">@subject.description</div>
+
+                                        <form asp-page-handler="DeleteCategory">
+                                            <div class="form-group" style="visibility: hidden">
+                                                <input asp-for="CategoryID" class="form-control" value="@subject.categoryID" />
+                                                <span asp-validation-for="CategoryID" class="text-danger"></span>
+                                            </div>
+                                            <button class="btn btn-danger" type="submit">Radera</button>
+                                        </form>
+
                                     </div>
                                 </div>
                             </div>

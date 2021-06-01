@@ -41,6 +41,15 @@
                                         </div>
                                         <a asp-page="/ThreadView" asp-route-topicID="@subject.topicID" class="forum-item-title">@subject.title</a>
                                         <div class="forum-sub-title">@subject.createDate</div>
+
+                                        <form asp-page-handler="DeleteTopic">
+                                            <div class="form-group" style="visibility: hidden">
+                                                <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
+                                                <span asp-validation-for="TopicID" class="text-danger"></span>
+                                            </div>
+                                            <button class="btn btn-danger" type="submit">Radera</button>
+                                        </form>
+
                                     </div>
                                 </div>
                             </div>
