@@ -12,5 +12,6 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public string title { get; set; }
         public string description { get; set; }
         public DateTime createDate { get; set; }
+        public DateTime editDate { get; set; }
     }
 }

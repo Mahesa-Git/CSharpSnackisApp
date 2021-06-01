@@ -1,6 +1,7 @@
 using CSharpSnackisApp.Models.ResponseModels;
 using CSharpSnackisApp.Models.Toolbox;
 using CSharpSnackisApp.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -18,18 +19,23 @@ namespace CSharpSnackisApp.Pages
 {
     public class PostAndReplyViewModel : PageModel
     {
+        private readonly SnackisAPI _client;
+
+        private readonly ILogger<IndexModel> _logger;
+        public List<PostResponseModel> _postResponseModel { get; set; }
+        public List<ReplyResponseModel> _replyResponseModel { get; set; }
+        public string Message { get; set; }
+        public bool ButtonVisibility { get; set; }
+        public bool UserButtonVisibility { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string ThreadID { get; set; }
+
         [BindProperty]
         public string Title { get; set; }
         [BindProperty]
         public string BodyText { get; set; }
-        private readonly ILogger<IndexModel> _logger;
-        public List<PostResponseModel> _postResponseModel { get; set; }
-        public List<ReplyResponseModel> _replyResponseModel { get; set; }
-        private readonly SnackisAPI _client;
-        public string Message { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public string ThreadID { get; set; }
         [BindProperty]
         public string PostID { get; set; }
         [BindProperty]
@@ -42,14 +48,30 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            if (ThreadID is not null)
+            string userId = null;
+            try
             {
-                TokenChecker.ThreadID = ThreadID;
+                string userRole = HttpContext.Session.GetString("Role");
+                userId = HttpContext.Session.GetString("Id");
+
+                if (userRole == "root" || userRole == "admin")
+                    ButtonVisibility = true;
+                else
+                    ButtonVisibility = false;
             }
+            catch (Exception)
+            {
+                ButtonVisibility = false;
+            }
+            if (userId is null)
+                UserButtonVisibility = false;
             else
-            {
+                UserButtonVisibility = true;
+
+            if (ThreadID is not null)
+                TokenChecker.ThreadID = ThreadID;
+            else
                 ThreadID = TokenChecker.ThreadID;
-            }
 
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadPostsInThread/{ThreadID}");
             var request = response.Content.ReadAsStringAsync().Result;
@@ -57,16 +79,30 @@ namespace CSharpSnackisApp.Pages
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 _postResponseModel = JsonConvert.DeserializeObject<List<PostResponseModel>>(request);
-
+                if (userId is not null)
+                {
+                    foreach (var model in _postResponseModel)
+                    {
+                        if (userId == model.user.Id)
+                            model.ButtonVisibility = true;
+                    }
+                }
                 foreach (var post in _postResponseModel)
                 {
                     response = await _client.GetAsync($"/Post/ReadRepliesToPost/{post.postID}");
                     request = response.Content.ReadAsStringAsync().Result;
                     _replyResponseModel = JsonConvert.DeserializeObject<List<ReplyResponseModel>>(request);
+                    if (userId is not null)
+                    {
+                        foreach (var model in _replyResponseModel)
+                        {
+                            if (userId == model.user.Id)
+                                model.ButtonVisibility = true;
+                        }
+                    }
                     post.replies = _replyResponseModel;
                 }
                 return Page();
-
             }
             else
                 return RedirectToPage("/Error");
@@ -105,10 +141,8 @@ namespace CSharpSnackisApp.Pages
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-
                     IActionResult resultPage = await OnGetAsync();
                     return resultPage;
-
                 }
                 else
                 {
@@ -251,6 +285,14 @@ namespace CSharpSnackisApp.Pages
                 Message = "Det gick inte att radera posten";
                 return Page();
             }
+        }
+        public async Task<IActionResult> OnPostEditPost()
+        {
+            return Page();
+        }
+        public async Task<IActionResult> OnPostEditReply()
+        {
+            return Page();
         }
     }
 }

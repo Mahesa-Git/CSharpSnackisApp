@@ -13,7 +13,7 @@
                         <div class="pull-left m-r-md">
                             <i class="fa fa-globe text-navy mid-icon"></i>
                         </div>
-                        <h2>C#-Snackis - Rätt plats för diskussioner om alpha hobbys</h2>
+                        <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
                         <span>Välj en tråd</span>
                     </div>
                 </div>
@@ -27,11 +27,10 @@
                     </div>
                     <div class="forum-title">
                         <div class="forum-title">
-                            <input type="checkbox" id="switch1" class="custom-control-input" name="c1" onclick="showMe('div1')">
-                            <label style="padding-left: 30px" class="custom-control-label" for="switch1">Skapa ny tråd</label>
+                            <button class="btn btn-primary" onclick="showDiv1()">Ny tråd</button>
                         </div>
 
-                        <div id="div1">
+                        <div id="div1" style="display: none">
                             <form method="post">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -73,7 +72,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @if (subject.ButtonVisibility)
+                            @if (subject.ButtonVisibility || Model.ButtonVisibility)
                             {
                                 <form asp-page-handler="DeleteThread">
                                     <div class="form-group" style="visibility: hidden">

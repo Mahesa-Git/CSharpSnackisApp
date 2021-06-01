@@ -11,5 +11,6 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public List<Thread> threads { get; set; }
         public string title { get; set; }
         public DateTime createDate { get; set; }
+        public DateTime editDate { get; set; }
     }
 }

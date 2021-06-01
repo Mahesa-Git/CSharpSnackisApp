@@ -11,7 +11,9 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public string bodyText { get; set; }
         public string image { get; set; }
         public DateTime createDate { get; set; }
+        public DateTime editDate { get; set; }
         public bool isReported { get; set; }
+        public bool ButtonVisibility { get; set; }
         public User user { get; set; }
         public Thread thread { get; set; }
         public List<PostReaction> postReactions { get; set; }
