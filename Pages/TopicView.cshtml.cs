@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CSharpSnackisApp.Models.ResponseModels;
 using CSharpSnackisApp.Models.Toolbox;
 using CSharpSnackisApp.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -28,6 +29,7 @@ namespace CSharpSnackisApp.Pages
         public string TopicID { get; set; }
         [BindProperty]
         public string Title { get; set; }
+        public bool ButtonVisibility { get; set; }
 
         public TopicViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -37,7 +39,23 @@ namespace CSharpSnackisApp.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+            try
+            {
+                string userRole = HttpContext.Session.GetString("Role");
 
+                if (userRole == "root" || userRole == "admin")
+                {
+                    ButtonVisibility = true;
+                }
+                else
+                {
+                    ButtonVisibility = false;
+                }
+            }
+            catch (Exception)
+            {
+                ButtonVisibility = false;
+            }
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadTopicsInCategory/{categoryID}");
             var request = response.Content.ReadAsStringAsync().Result;
 
