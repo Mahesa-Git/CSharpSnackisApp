@@ -48,7 +48,7 @@
 
                                 <div class="form-group">
                                     <label class="control-label">Inläggstext</label>
-                                    <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
+                                    <textarea autocomplete="off" asp-for="BodyText" class="form-control"></textarea>
                                     <span asp-validation-for="BodyText" class="text-danger"></span>
                                 </div>
                                 <button class="btn btn-dark" type="submit">Skapa ny post</button>
@@ -64,64 +64,76 @@
                     {
                         @foreach (var subject in Model._postResponseModel)
                         {
-                            <div class="forum-item active">
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <div class="forum-icon">
-                                            <i class="fa fa-shield"></i>
-                                        </div>
-                                        <div class="img-thumbnail">
-                                            <!--här ska image in-->
-                                            <image src="img/@subject.user.Image"></image>
-                                        </div>
-                                        <div class="forum-sub-title">@subject.user.UserName</div>
-                                        <div class="forum-sub-title">@subject.title</div>
-                                        <div class="forum-sub-title">@subject.bodyText</div>
-                                        <div class="forum-sub-title">@subject.createDate</div>
-                                    </div>
-                                </div>
+                         <div class="forum-item active">
+                             <div class="card mb-2">
+                                 <div class="card-body p-2 p-sm-3">
+                                     <div class="media forum-item">
+                                         <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="img/@subject.user.Image" class="mr-3 rounded-circle" width="50" alt="User" /></a>
+                                         <div class="media-body">
+                                             <h6><b>@subject.title</b></h6>
+                                             <p class="text-secondary">
+                                                 @subject.bodyText
+                                             </p>
+                                             <p class="text-muted"><span class="text-primary">@subject.user.UserName</span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
+                                         </div>
+                                         @*<div class="text-muted small text-center align-self-center">
+                                 <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 49</span>
+                                 <span><i class="far fa-comment ml-2"></i> 9</span>
+                             </div>*@     <!---här fixar vi like och dislike senare ---->
+                                     </div>
+                                 </div>
+
+                                   @if (subject.replies.Count > 0 || subject.replies is not null)
+                                   {
+                                       foreach (var reply in subject.replies)
+                                          {
+                                             <div style="padding-left: 150px">
+                                                 <div class="card mb-2, text-white">
+                                                     <div class="card-body p-2 p-sm-3">
+                                                         <div class="media forum-item">
+                                                             <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="img/@reply.user.Image" class="mr-3 rounded-circle" width="50" alt="User" /></a>
+                                                             <div class="media-body">
+                                                                 <p class="text-secondary">
+                                                                     @reply.bodyText
+                                                                 </p>
+                                                                 <p class="text-muted"><span class="text-primary">@reply.user.UserName</span> svarade <span class="text-secondary font-weight-bold">@reply.createDate</span></p>
+                                                             </div>
+                                                             @*<div class="text-muted small text-center align-self-center">
+                                                                   <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 49</span>
+                                                                   <span><i class="far fa-comment ml-2"></i> 9</span>
+                                                               </div>*@     <!---här fixar vi like och dislike senare ---->
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                          }
+                                  
+                                   }
+                                  
+
+                                  <div class="forum-title">
+                                      <form asp-page-handler="Reply">
+                                          <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                 
+                                          <div class="form-group" style="visibility: hidden">
+                                              <input asp-for="PostID" class="form-control" value="@subject.postID" />
+                                              <span asp-validation-for="PostID" class="text-danger"></span>
+                                          </div>
+                                 
+                                 
+                                          <div class="form-group">
+                                              <label class="control-label">Skriv ett svar.</label>
+                                              <textarea autocomplete="off" asp-for="BodyText" class="form-control"></textarea>
+                                              <span asp-validation-for="BodyText" class="text-danger"></span>
+                                          </div>
+                                          <button class="btn btn-dark" type="submit">Svara</button>
+                                      </form>
+                                 
+                                  </div>
+                              </div>
+                          </div>
 
 
-                                <div class="forum-title">
-                                    <form asp-page-handler="Reply">
-                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                                        <div class="form-group" style="visibility: hidden">
-                                            <input asp-for="PostID" class="form-control" value="@subject.postID" />
-                                            <span asp-validation-for="PostID" class="text-danger"></span>
-                                        </div>
-
-
-                                        <div class="form-group">
-                                            <label class="control-label">Skriv ett svar.</label>
-                                            <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
-                                            <span asp-validation-for="BodyText" class="text-danger"></span>
-                                        </div>
-                                        <button class="btn btn-dark" type="submit">Svara</button>
-                                    </form>
-
-                                </div>
-                            </div>
-                            @if (subject.replies.Count > 0 || subject.replies is not null)
-                            {
-                                foreach (var reply in subject.replies)
-                                {
-                                    <div class="img-thumbnail">
-                                        <!--här ska image in-->
-                                        <image src="img/@reply.user.Image"></image>
-                                    </div>
-                                    <div class="forum-item active" style="padding-left: 50px">
-                                        <div class="row">
-                                            <div class="col-md-9">
-                                                <div class="forum-sub-title">@reply.user.UserName</div>
-                                                <div class="forum-sub-title">@reply.bodyText</div>
-                                                <div class="forum-sub-title">@reply.createDate</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-
-                            }
                         }
                     }
                 </div>

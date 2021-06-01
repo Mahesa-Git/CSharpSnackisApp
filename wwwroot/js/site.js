@@ -19,4 +19,3 @@ function showMe(box) {
     }
     document.getElementById(box).style.display = vis;
 }
-
