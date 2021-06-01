@@ -32,6 +32,8 @@ namespace CSharpSnackisApp.Pages
         public string ThreadID { get; set; }
         [BindProperty]
         public string PostID { get; set; }
+        [BindProperty]
+        public string ReplyID { get; set; }
 
         public PostAndReplyViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -57,7 +59,7 @@ namespace CSharpSnackisApp.Pages
                 _postResponseModel = JsonConvert.DeserializeObject<List<PostResponseModel>>(request);
 
                 foreach (var post in _postResponseModel)
-                {                  
+                {
                     response = await _client.GetAsync($"/Post/ReadRepliesToPost/{post.postID}");
                     request = response.Content.ReadAsStringAsync().Result;
                     _replyResponseModel = JsonConvert.DeserializeObject<List<ReplyResponseModel>>(request);
@@ -170,6 +172,85 @@ namespace CSharpSnackisApp.Pages
                 return Page();
             }
 
+        }
+        public async Task<IActionResult> OnPostDeletePost()
+        {
+            string token = null;
+            try
+            {
+                byte[] tokenByte;
+                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+                token = Encoding.ASCII.GetString(tokenByte);
+            }
+            catch (Exception)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            if (!String.IsNullOrEmpty(token))
+            {
+                HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeletePost/{PostID}");
+                var request = response.Content.ReadAsStringAsync().Result;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return RedirectToPage("/index");
+                }
+                else
+                {
+                    Message = "Det gick inte att radera posten";
+                    return Page();
+                }
+
+            }
+            else
+            {
+                Message = "Det gick inte att radera posten";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostDeleteReply()
+        {
+            string token = null;
+            try
+            {
+                byte[] tokenByte;
+                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+                token = Encoding.ASCII.GetString(tokenByte);
+            }
+            catch (Exception)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            if (!String.IsNullOrEmpty(token))
+            {
+                HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeleteReply/{ReplyID}");
+                var request = response.Content.ReadAsStringAsync().Result;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    IActionResult resultPage = await OnGetAsync();
+                    return resultPage;
+                }
+                else
+                {
+                    Message = "Det gick inte att radera posten";
+                    return Page();
+                }
+
+            }
+            else
+            {
+                Message = "Det gick inte att radera posten";
+                return Page();
+            }
         }
     }
 }

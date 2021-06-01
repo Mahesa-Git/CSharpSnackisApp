@@ -75,6 +75,13 @@
                                                  @subject.bodyText
                                              </p>
                                              <p class="text-muted"><span class="text-primary">@subject.user.UserName</span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
+                                             <form asp-page-handler="DeletePost">
+                                                 <div class="form-group" style="visibility: hidden">
+                                                     <input asp-for="PostID" class="form-control" value="@subject.postID" />
+                                                     <span asp-validation-for="Title" class="text-danger"></span>
+                                                 </div>
+                                                 <button class="btn btn-danger" type="submit">Radera</button>
+                                             </form>
                                          </div>
                                          @*<div class="text-muted small text-center align-self-center">
                                  <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 49</span>

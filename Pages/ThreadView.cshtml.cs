@@ -86,6 +86,7 @@ namespace CSharpSnackisApp.Pages
                 {
                     values.Remove("topicID");
                     values.Add("threadID", $"{request}");
+                    values.Add("isThreadStart", $"{true}");
                     payload = JsonConvert.SerializeObject(values);
                     content = new StringContent(payload, Encoding.UTF8, "application/json");
                     response = await _client.PostAsync("Post/CreatePost", content);
