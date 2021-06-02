@@ -3,41 +3,111 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CSharpSnackisApp</title>
+    <title>@ViewData["Title"] - Motor-duon forum</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">CSharpSnackisApp</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/Index">Motor-duon Forum</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            @using CSharpSnackisApp.Models.Toolbox
+
+            @{bool returnTokenValue = TokenChecker.UserStatus;}
+
+            @if (returnTokenValue == false)
+            {
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Meny
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/LoginView">Logga in</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/RegisterView">Registrera dig</a>
+                            </div>
                         </li>
                     </ul>
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Sök bland trådar och inlägg" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sök</button>
+                    </form>
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+            }
+            @if (returnTokenValue == true)
+            {
+                @if (TokenChecker.ActiveRole == "root")
+                {
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <b><i>@TokenChecker.UserName</i></b> - Meny
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/LogOutView">Logga ut</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#">Admin dashboard</a>
+                                    <div class="dropdown-divider"></div>
+                                </div>
+                            </li>
+                        </ul>
+                        <form class="form-inline my-2 my-lg-0">
+                            <input class="form-control mr-sm-2" type="search" placeholder="Sök bland trådar och inlägg" aria-label="Search">
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sök</button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <b><i>@TokenChecker.UserName</i></b> - Meny
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/LogOutView">Logga ut</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#">Mina sidor</a>
+                                    <div class="dropdown-divider"></div>
+                                </div>
+                            </li>
+                        </ul>
+                        <form class="form-inline my-2 my-lg-0">
+                            <input class="form-control mr-sm-2" type="search" placeholder="Sök bland trådar och inlägg" aria-label="Search">
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sök</button>
+                        </form>
+                    </div>
 
+                }
+
+            }
+
+        </nav>
+        <div class="container">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - CSharpSnackisApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            <div style="text-align: center">&copy; 2021 - Motor-duon Forum - 
+            <a asp-area="" asp-page="/Privacy">GDPR</a>
+            <a style="margin-left: 30px" class="btn btn-primary" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView">Chattar</a>
+            </div>
+
         </div>
     </footer>
 

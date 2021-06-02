@@ -1,7 +1,7 @@
 ﻿@page
-@model IndexModel
+@model CSharpSnackisApp.Pages.TopicViewModel
 @{
-    ViewData["Title"] = "Startsida - Kategorier";
+    ViewData["Title"] = "Ämnen";
 }
 <div class="container">
     <div class="row">
@@ -14,32 +14,34 @@
                             <i class="fa fa-globe text-navy mid-icon"></i>
                         </div>
                         <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
-                        <span>Välj en kategori</span>
+                        <span>Välj ett ämne</span>
                     </div>
                 </div>
+
+
                 <div class="ibox-content forum-container">
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
                             <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
-                        </div>
-                        <h3>Kategorier</h3>
-                    </div>
 
+                        </div>
+                        <h3>Ämnen</h3>
+                    </div>
 
                     @if (Model.ButtonVisibility)
                     {
-                            var divId5 = Guid.NewGuid().ToString();
+                        var divId6 = Guid.NewGuid().ToString();
+                        <div class="forum-title">
                             <div class="forum-title">
-                                <div class="forum-title">
-                                    <button class="btn btn-primary" onclick="showDiv('@divId5')">Ny Kategori</button>
-                                </div>
+                                <button class="btn btn-primary" onclick="showDiv('@divId6')">Nytt Ämne</button>
                             </div>
-                        <div id="@divId5" style="display: none">
-                            <form asp-page-handler="CreateCategory">
+                        </div>
+                        <div id="@divId6" style="display: none">
+                            <form asp-page-handler="CreateTopic">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                 <div class="form-group" style="visibility: hidden">
-                                    <input asp-for="CategoryID" class="form-control" value="@Model.CategoryID" />
+                                    <input asp-for="categoryID" class="form-control" value="@Model.categoryID" />
                                     <span asp-validation-for="Title" class="text-danger"></span>
                                 </div>
 
@@ -49,12 +51,7 @@
                                     <span asp-validation-for="Title" class="text-danger"></span>
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="control-label">Beskrivning</label>
-                                    <textarea asp-for="Description" class="form-control" autocomplete="off"></textarea>
-                                    <span asp-validation-for="Description" class="text-danger"></span>
-                                </div>
-                                <button class="btn btn-dark" type="submit">Skapa ny Kategori</button>
+                                <button class="btn btn-dark" type="submit">Skapa nytt ämne</button>
                             </form>
                         </div>
                     }
@@ -65,7 +62,7 @@
                     }
                     else
                     {
-                        @foreach (var subject in Model._categoryResponseModel)
+                        @foreach (var subject in Model._topicResponseModels)
                         {
                             <div class="forum-item active">
                                 <div class="row">
@@ -73,17 +70,40 @@
                                         <div class="forum-icon">
                                             <i class="fa fa-shield"></i>
                                         </div>
-                                        <a asp-page="/TopicView" asp-route-categoryID="@subject.categoryID" class="forum-item-title">@subject.title</a>
-                                        <div class="forum-sub-title">@subject.description</div>
+                                        <a asp-page="/ThreadView" asp-route-topicID="@subject.topicID" class="forum-item-title">@subject.title</a>
+                                        <div class="forum-sub-title">@subject.createDate</div>
                                         @if (Model.ButtonVisibility)
                                         {
-                                            <form asp-page-handler="DeleteCategory">
+                                            var EditTopics = Guid.NewGuid().ToString();
+
+
+                                            <form asp-page-handler="DeleteTopic">
                                                 <div class="form-group" style="visibility: hidden">
-                                                    <input asp-for="CategoryID" class="form-control" value="@subject.categoryID" />
-                                                    <span asp-validation-for="CategoryID" class="text-danger"></span>
+                                                    <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
+                                                    <span asp-validation-for="TopicID" class="text-danger"></span>
                                                 </div>
                                                 <button class="btn btn-danger" type="submit">Radera</button>
                                             </form>
+
+
+                                            <div class="forum-title">
+                                                <button class="btn btn-primary" onclick="showDiv('@EditTopics')">Ändra</button>
+                                            </div>
+                                            <div id="@EditTopics" style="display: none">
+                                                <form asp-page-handler="EditTopic">
+                                                    <div class="form-group" style="visibility: hidden">
+                                                        <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
+                                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">Titel</label>
+                                                        <input asp-for="Title" class="form-control" autocomplete="off" value="@subject.title" />
+                                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                                    </div>
+
+                                                    <button class="btn btn-danger" type="submit">Ändra</button>
+                                                </form>
+                                            </div>
                                         }
                                     </div>
                                 </div>
