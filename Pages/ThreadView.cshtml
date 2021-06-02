@@ -25,66 +25,70 @@
                         </div>
                         <h3>Trådar</h3>
                     </div>
-                    <div class="forum-title">
-                        <div class="forum-title">
-                            <button class="btn btn-primary" onclick="showDiv1()">Ny tråd</button>
-                        </div>
-
-                        <div id="div1" style="display: none">
-                            <form method="post">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                                <div class="form-group" style="visibility: hidden">
-                                    <input asp-for="TopicID" class="form-control" value="@Model.TopicID" />
-                                    <span asp-validation-for="Title" class="text-danger"></span>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label">Titel</label>
-                                    <input asp-for="Title" class="form-control" autocomplete="off" />
-                                    <span asp-validation-for="Title" class="text-danger"></span>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label">Inläggstext</label>
-                                    <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
-                                    <span asp-validation-for="BodyText" class="text-danger"></span>
-                                </div>
-                                <button class="btn btn-dark" type="submit">Skapa ny tråd</button>
-                            </form>
-                        </div>
-                    </div>
-                    @if (Model.Message is not null)
-                    {
-                        <p>@Model.Message</p>
-                    }
-                    else
-                    {
-                        @foreach (var subject in Model._threadResponseModels)
-                        {
-                            <div class="forum-item active">
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <div class="forum-icon">
-                                            <i class="fa fa-shield"></i>
-                                        </div>
-                                        <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title</a>
-                                    </div>
-                                </div>
-                            </div>
-                            @if (subject.ButtonVisibility || Model.ButtonVisibility)
+                    @if (Model.UserButtonVisibility)
                             {
-                                <form asp-page-handler="DeleteThread">
+                                var divId1 = Guid.NewGuid().ToString();
+                        <div class="forum-title">
+                            <div class="forum-title">
+                                <button class="btn btn-primary" onclick="showDiv('@divId1')">Ny tråd</button>
+                            </div>
+
+                            <div id="@divId1" style="display: none">
+                                <form method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                                     <div class="form-group" style="visibility: hidden">
-                                        <input asp-for="ThreadID" class="form-control" value="@subject.threadID" />
-                                        <span asp-validation-for="ThreadID" class="text-danger"></span>
+                                        <input asp-for="TopicID" class="form-control" value="@Model.TopicID" />
+                                        <span asp-validation-for="Title" class="text-danger"></span>
                                     </div>
-                                    <button class="btn btn-danger" type="submit">Radera</button>
+
+                                    <div class="form-group">
+                                        <label class="control-label">Titel</label>
+                                        <input asp-for="Title" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label">Inläggstext</label>
+                                        <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
+                                        <span asp-validation-for="BodyText" class="text-danger"></span>
+                                    </div>
+                                    <button class="btn btn-dark" type="submit">Skapa ny tråd</button>
                                 </form>
+                            </div>
+                        </div>
+                        }
+                        @if (Model.Message is not null)
+                        {
+                            <p>@Model.Message</p>
+                        }
+                        else
+                        {
+                            @foreach (var subject in Model._threadResponseModels)
+                            {
+                                <div class="forum-item active">
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <div class="forum-icon">
+                                                <i class="fa fa-shield"></i>
+                                            </div>
+                                            <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (subject.ButtonVisibility || Model.ButtonVisibility)
+                                {
+                                    <form asp-page-handler="DeleteThread">
+                                        <div class="form-group" style="visibility: hidden">
+                                            <input asp-for="ThreadID" class="form-control" value="@subject.threadID" />
+                                            <span asp-validation-for="ThreadID" class="text-danger"></span>
+                                        </div>
+                                        <button class="btn btn-danger" type="submit">Radera</button>
+                                    </form>
+                                }
                             }
                         }
-                    }
-                </div>
+                    </div>
             </div>
         </div>
     </div>

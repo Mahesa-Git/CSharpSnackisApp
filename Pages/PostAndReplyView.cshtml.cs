@@ -8,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -141,7 +139,11 @@ namespace CSharpSnackisApp.Pages
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+                    
                     IActionResult resultPage = await OnGetAsync();
+                    ModelState.Clear();
+                    Title = null;
+                    BodyText = null;
                     return resultPage;
                 }
                 else
@@ -190,7 +192,11 @@ namespace CSharpSnackisApp.Pages
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+                   
                     IActionResult resultPage = await OnGetAsync();
+                    ModelState.Clear();
+                    Title = null;
+                    BodyText = null;
                     return resultPage;
 
                 }
@@ -288,11 +294,65 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostEditPost()
         {
-            return Page();
+
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"title", $"{Title}"},
+                    {"bodyText", $"{BodyText}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync($"Post/UpdatePost/{PostID}", content);
+
+            string request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
+            }
+            else
+            {
+                Message = "Kunde inte ändra posten";
+                return Page();
+            }
         }
         public async Task<IActionResult> OnPostEditReply()
         {
-            return Page();
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"bodyText", $"{BodyText}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync($"Post/UpdateReply/{ReplyID}", content);
+
+            string request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
+            }
+            else
+            {
+                Message = "Kunde inte ändra svaret";
+                return Page();
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ namespace CSharpSnackisApp.Pages
         [BindProperty(SupportsGet = true)]
         public string TopicID { get; set; }
         public bool ButtonVisibility { get; set; }
+        public bool UserButtonVisibility { get; set; }
         [BindProperty]
         public string ThreadID { get; set; }
 
@@ -60,6 +61,10 @@ namespace CSharpSnackisApp.Pages
             {
                 ButtonVisibility = false;
             }
+            if (userId is null)
+                UserButtonVisibility = false;
+            else
+                UserButtonVisibility = true;
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadThreadsInTopic/{TopicID}");
             var request = response.Content.ReadAsStringAsync().Result;
 
@@ -126,6 +131,9 @@ namespace CSharpSnackisApp.Pages
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         IActionResult resultPage = await OnGetAsync();
+                        ModelState.Clear();
+                        Title = null;
+                        BodyText = null;
                         return resultPage;
                     }
                     else

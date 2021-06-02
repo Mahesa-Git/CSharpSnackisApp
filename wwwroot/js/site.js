@@ -3,32 +3,8 @@
 
 // Write your JavaScript code.
 
-function showDiv1() {
-    var x = document.getElementById("div1");
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
-}
-function showDiv2() {
-    var x = document.getElementById("div2");
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
-}
-function showDiv3() {
-    var x = document.getElementById("div3");
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
-}
-function showDiv4() {
-    var x = document.getElementById("div4");
+function showDiv(input) {
+    var x = document.getElementById(input);
     if (x.style.display === "none") {
         x.style.display = "block";
     } else {
