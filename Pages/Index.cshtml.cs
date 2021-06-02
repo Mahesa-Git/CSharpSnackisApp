@@ -23,9 +23,17 @@ namespace CSharpSnackisApp.Pages
         public List<CategoryResponseModel> _categoryResponseModel { get; set; }
         private readonly SnackisAPI _client;
         public string Message { get; set; }
+
         [BindProperty]
         public string CategoryID { get; set; }
+
         public bool ButtonVisibility { get; set; }
+
+        [BindProperty]
+        public string Description { get; set; }
+
+        [BindProperty]
+        public string Title { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -102,6 +110,57 @@ namespace CSharpSnackisApp.Pages
             else
             {
                 Message = "Det gick inte att radera Kategorin";
+                return Page();
+            }
+        }
+
+
+        public async Task<IActionResult> OnPostCreateCategory()
+        {
+            string token = null;
+            try
+            {
+                byte[] tokenByte;
+                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+                token = Encoding.ASCII.GetString(tokenByte);
+            }
+            catch (Exception)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            if (!String.IsNullOrEmpty(token))
+            {
+                var values = new Dictionary<string, string>()
+                 {
+                    {"title", $"{Title}"},
+                    {"description", $"{Description}"}
+                 };
+
+                string payload = JsonConvert.SerializeObject(values);
+                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _client.PostAsync($"/AdminPost/CreateCategory", content);
+
+                var request = response.Content.ReadAsStringAsync().Result;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return RedirectToPage("/Index");
+                }
+                else
+                {
+                    Message = "Det gick inte att skapa kategorin";
+                    return Page();
+                }
+
+            }
+            else
+            {
+                Message = "Det gick inte att skapa kategorin";
                 return Page();
             }
         }

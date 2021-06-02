@@ -15,6 +15,7 @@ namespace CSharpSnackisApp.Models.Toolbox
         public static string UserName { get; set; }
         public static string ThreadID { get; set; }
         public static string TopicID { get; set; }
+        public static string CategoryID{ get; set; }
 
     }
 }

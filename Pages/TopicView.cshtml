@@ -17,6 +17,8 @@
                         <span>Välj ett ämne</span>
                     </div>
                 </div>
+
+
                 <div class="ibox-content forum-container">
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
@@ -25,6 +27,35 @@
                         </div>
                         <h3>Ämnen</h3>
                     </div>
+
+                    @if (Model.ButtonVisibility)
+                    {
+                        var divId6 = Guid.NewGuid().ToString();
+                        <div class="forum-title">
+                            <div class="forum-title">
+                                <button class="btn btn-primary" onclick="showDiv('@divId6')">Nytt Ämne</button>
+                            </div>
+                        </div>
+                        <div id="@divId6" style="display: none">
+                            <form asp-page-handler="CreateTopic">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group" style="visibility: hidden">
+                                    <input asp-for="categoryID" class="form-control" value="@Model.categoryID" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Titel</label>
+                                    <input asp-for="Title" class="form-control" autocomplete="off" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <button class="btn btn-dark" type="submit">Skapa nytt ämne</button>
+                            </form>
+                        </div>
+                    }
+
                     @if (Model.Message is not null)
                     {
                         <p>@Model.Message</p>
@@ -41,15 +72,38 @@
                                         </div>
                                         <a asp-page="/ThreadView" asp-route-topicID="@subject.topicID" class="forum-item-title">@subject.title</a>
                                         <div class="forum-sub-title">@subject.createDate</div>
-                                        @if(Model.ButtonVisibility)
+                                        @if (Model.ButtonVisibility)
                                         {
-                                         <form asp-page-handler="DeleteTopic">
-                                             <div class="form-group" style="visibility: hidden">
-                                                 <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
-                                                 <span asp-validation-for="TopicID" class="text-danger"></span>
-                                             </div>
-                                             <button class="btn btn-danger" type="submit">Radera</button>
-                                         </form>
+                                            var EditTopics = Guid.NewGuid().ToString();
+
+
+                                            <form asp-page-handler="DeleteTopic">
+                                                <div class="form-group" style="visibility: hidden">
+                                                    <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
+                                                    <span asp-validation-for="TopicID" class="text-danger"></span>
+                                                </div>
+                                                <button class="btn btn-danger" type="submit">Radera</button>
+                                            </form>
+
+
+                                            <div class="forum-title">
+                                                <button class="btn btn-primary" onclick="showDiv('@EditTopics')">Ändra</button>
+                                            </div>
+                                            <div id="@EditTopics" style="display: none">
+                                                <form asp-page-handler="EditTopic">
+                                                    <div class="form-group" style="visibility: hidden">
+                                                        <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
+                                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label">Titel</label>
+                                                        <input asp-for="Title" class="form-control" autocomplete="off" value="@subject.title" />
+                                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                                    </div>
+
+                                                    <button class="btn btn-danger" type="submit">Ändra</button>
+                                                </form>
+                                            </div>
                                         }
                                     </div>
                                 </div>
