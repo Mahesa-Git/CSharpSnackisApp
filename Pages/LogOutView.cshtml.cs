@@ -14,6 +14,7 @@ namespace CSharpSnackisApp.Pages
         {
             TokenChecker.ActiveRole = null;
             TokenChecker.UserStatus = false;
+            TokenChecker.LoggedInUserID = null;
             HttpContext.Session.Clear();
             return RedirectToPage("/index");
         }

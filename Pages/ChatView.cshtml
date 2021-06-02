@@ -1,0 +1,117 @@
+﻿@page
+@model CSharpSnackisApp.Pages.ChatViewModel
+@{
+}
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container">
+
+    <!-- Page header start -->
+    <div class="page-title">
+        <div class="row gutters">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                <h5 class="title">Chattar</h5>
+                @if(Model.Message is not null)
+                {
+                    <h5 class="title text-danger">@Model.Message</h5>
+                }
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12"> </div>
+        </div>
+    </div>
+    <!-- Page header end -->
+    <!-- Content wrapper start -->
+    <div class="content-wrapper">
+
+        <!-- Row start -->
+        <div class="row gutters">
+
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+
+                <div class="card m-0">
+
+                    <!-- Nedan = VÄLJA PERSON TILL GC -->
+                    <div class="row no-gutters">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
+                            <form asp-page-handler="NewChat">
+                                <div class="users-container form-group">
+                                    <h5 class="title">PERSONER NY CHATT</h5>
+                                    <select asp-for="RecipantID" class="form-control">
+                                        <option value="RecipantID241415351">
+                                            Antonio Santana
+                                        </option> <!--foreach här över users peta in ID som value-->
+                                    </select>
+                                    <div class="form-group">
+                                        <input style="width : 200px" type="submit" value="Skapa chatt" class="btn btn-primary" />
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Nedan = AKTIVA CHATS-->
+                            <div class="users-container">
+                                <h5 class="title">AKTIVA CHATTAR</h5>
+                                <ul class="users">
+                                    <li class="person" data-chat="person1">
+                                        <div class="user">
+                                            <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png">
+                                        </div>
+                                        <p class="name-time">
+                                            <span class="name">Steve Bangalter</span>
+                                            <span class="time">15/02/2019</span>
+                                        </p>
+                                        <form asp-page-handler="SelectedChat">
+                                            <div class="form-group" style="visibility: hidden">
+                                                <input asp-for="GroupChatID" value="@Model.GroupChatID" class="form-control">
+                                                <span asp-validation-for="GroupChatID" class="text-danger"></span>
+                                            </div>
+                                            <input style="width : 200px" type="submit" value="Visa chatt" class="btn btn-primary" />
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                                <div class="selected-user">
+                                    <span>Till: <span class="name">Emily Russell</span></span> <!--Kanelbulle på recipant(inte aktuell user)-->
+                                </div>
+                                <div class="chat-container">
+                                    <ul class="chat-box chatContainerScroll">
+                                        <li class="chat-left"> <!--chat-left, chat-right--> <!--FOREACH ÖVER ELEMENT REPLIES I RESPONS FROM SELECTEDCHAT-->
+                                            <div class="chat-avatar">
+                                                <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png">
+                                                <div class="chat-name">Russell</div>
+                                            </div>
+                                            <div class="chat-text">
+                                                Hello, I'm Russell.
+                                                <br>How can I help you today?
+                                            </div>
+                                            <div class="chat-hour">08:55 <span class="fa fa-check-circle"></span></div>
+                                        </li>
+                                    </ul>
+                                    <form asp-page-handler="NewReplyInChat">
+                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                        <div class="form-group" style="visibility: hidden">
+                                            <input asp-for="GroupChatID" class="form-control" value="@Model.GroupChatID" />
+                                            <span asp-validation-for="GroupChatID" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group mt-3 mb-0">
+                                            <textarea class="form-control" asp-for="BodyText" rows="3" placeholder="Skriv ett meddelande"></textarea>
+                                            <span asp-validation-for="BodyText" class="text-danger"></span>
+                                        </div>
+                                        <input style="width : 200px" type="submit" value="Skicka" class="btn btn-primary" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- Row end -->
+                </div>
+
+            </div>
+
+        </div>
+        <!-- Row end -->
+
+    </div>
+    <!-- Content wrapper end -->
+
+</div>

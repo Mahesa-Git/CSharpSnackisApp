@@ -103,7 +103,11 @@
     </div>
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - Motor-duon Forum - <a asp-area="" asp-page="/Privacy">GDPR</a>
+            <div style="text-align: center">&copy; 2021 - Motor-duon Forum - 
+            <a asp-area="" asp-page="/Privacy">GDPR</a>
+            <a style="margin-left: 30px" class="btn btn-primary" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView">Chattar</a>
+            </div>
+
         </div>
     </footer>
 
