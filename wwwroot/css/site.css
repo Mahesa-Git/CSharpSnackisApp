@@ -327,16 +327,20 @@ a.forum-item-title {
     background-color: #000;
     overflow-x: hidden;
     padding-top: 20px;
+    margin-top: 4%
 }
 
 
 .main {
+    margin-top: 10%;
+    margin-bottom: 20%;
     padding: 0px 10px;
 }
 
 @media screen and (max-height: 450px) {
     .sidenav {
         padding-top: 15px;
+        margin-top: 4%
     }
 }
 
@@ -353,6 +357,8 @@ a.forum-item-title {
 @media screen and (min-width: 768px) {
     .main {
         margin-left: 40%;
+        margin-top: 10%;
+        margin-bottom: 20%;
     }
 
     .sidenav {
@@ -361,6 +367,7 @@ a.forum-item-title {
         z-index: 1;
         top: 0;
         left: 0;
+        margin-top: 4%
     }
 
     .login-form {
@@ -604,6 +611,7 @@ body {
     position: relative;
     padding: 1rem;
     overflow-y: scroll;
+    margin-bottom: 20%;
 }
 
     .chat-container li.chat-left,
@@ -767,5 +775,6 @@ ul {
     margin-bottom: 2rem;
     box-shadow: none;
 }
+
 
 

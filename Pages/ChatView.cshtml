@@ -37,9 +37,14 @@
                                 <div class="users-container form-group">
                                     <h5 class="title">PERSONER NY CHATT</h5>
                                     <select asp-for="RecipantID" class="form-control">
-                                        <option value="RecipantID241415351">
-                                            Antonio Santana
-                                        </option> <!--foreach här över users peta in ID som value-->
+                                        @if(Model.Users != null)
+                                         {
+
+                                             @foreach (var user in Model.Users)
+                                             {
+                                                <option value="@user.Id">@user.UserName</option>
+                                             }
+                                        }
                                     </select>
                                     <div class="form-group">
                                         <input style="width : 200px" type="submit" value="Skapa chatt" class="btn btn-primary" />
@@ -50,42 +55,69 @@
                             <div class="users-container">
                                 <h5 class="title">AKTIVA CHATTAR</h5>
                                 <ul class="users">
+                                    @if(Model.GroupChats != null)
+                                {
+                    
+            
+                                    @foreach (var groupChat in Model.GroupChats)
+                                    {
+                                         var user = groupChat.Users.Where(x => x.Id != Model.UserID).FirstOrDefault(); 
+
                                     <li class="person" data-chat="person1">
                                         <div class="user">
-                                            <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png">
+                                            <img src="img/@user.Image">
                                         </div>
                                         <p class="name-time">
-                                            <span class="name">Steve Bangalter</span>
-                                            <span class="time">15/02/2019</span>
+                                            <span class="name">@user.UserName</span>
                                         </p>
                                         <form asp-page-handler="SelectedChat">
                                             <div class="form-group" style="visibility: hidden">
-                                                <input asp-for="GroupChatID" value="@Model.GroupChatID" class="form-control">
+                                                <input asp-for="GroupChatID" value="@groupChat.GroupChatID" class="form-control">
                                                 <span asp-validation-for="GroupChatID" class="text-danger"></span>
                                             </div>
                                             <input style="width : 200px" type="submit" value="Visa chatt" class="btn btn-primary" />
                                         </form>
                                     </li>
+	                                }
+                                    }
                                 </ul>
                             </div>
                         </div>
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
                                 <div class="selected-user">
-                                    <span>Till: <span class="name">Emily Russell</span></span> <!--Kanelbulle på recipant(inte aktuell user)-->
+                                    @if(Model.SelectedGroupChat != null)
+                                    {
+
+                                    var userName = Model.SelectedGroupChat.Users.Where(x => x.Id != Model.UserID).FirstOrDefault();
+                                    <span>Till: <span class="name">@userName.UserName</span></span> <!--Kanelbulle på recipant(inte aktuell user)-->
+                                      }
+                                        else
+                                        {
+                                            <span>Till: <span class="name"></span></span>
+                                        }
+                                    
                                 </div>
                                 <div class="chat-container">
                                     <ul class="chat-box chatContainerScroll">
-                                        <li class="chat-left"> <!--chat-left, chat-right--> <!--FOREACH ÖVER ELEMENT REPLIES I RESPONS FROM SELECTEDCHAT-->
+                                        @if(Model.SelectedGroupChat != null)
+                                        {
+
+                                        @foreach (var reply in Model.SelectedGroupChat.Replies)
+                                                {
+                                                    var side = reply.User.Id == Model.UserID ? "chat-right" : "chat-left";
+                                                    
+                                        <li class="@side">
                                             <div class="chat-avatar">
-                                                <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png">
-                                                <div class="chat-name">Russell</div>
+                                                <img src="img/@reply.User.Image">
+                                                <div class="chat-name">@reply.User.UserName</div>
                                             </div>
                                             <div class="chat-text">
-                                                Hello, I'm Russell.
-                                                <br>How can I help you today?
+                                                @reply.BodyText
                                             </div>
-                                            <div class="chat-hour">08:55 <span class="fa fa-check-circle"></span></div>
+                                            <div class="chat-hour">@reply.CreateDate <span class="fa fa-check-circle"></span></div>
                                         </li>
+                                        }
+                                        }
                                     </ul>
                                     <form asp-page-handler="NewReplyInChat">
                                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
