@@ -65,7 +65,14 @@
 
                                     <li class="person" data-chat="person1">
                                         <div class="user">
-                                            <img src="img/@user.Image">
+                                            @if (user.Image == null)
+                                            {
+                                                <img src="img/NoPicture.jpg">
+                                            }
+                                            else
+                                            {
+                                                <img src="img/@user.Image">
+                                            }
                                         </div>
                                         <p class="name-time">
                                             <span class="name">@user.UserName</span>
@@ -89,7 +96,7 @@
                                     {
 
                                     var userName = Model.SelectedGroupChat.Users.Where(x => x.Id != Model.UserID).FirstOrDefault();
-                                    <span>Till: <span class="name">@userName.UserName</span></span> <!--Kanelbulle på recipant(inte aktuell user)-->
+                                    <span>Till: <span class="name">@userName.UserName</span></span> 
                                       }
                                         else
                                         {
@@ -108,7 +115,15 @@
                                                     
                                         <li class="@side">
                                             <div class="chat-avatar">
-                                                <img src="img/@reply.User.Image">
+                                                @if (reply.User.Image == null)
+                                                {
+                                                    <img src="img/NoPicture.jpg">
+                                                }
+                                                else
+                                                {
+                                                    <img src="img/@reply.User.Image">
+                                                    
+                                                }
                                                 <div class="chat-name">@reply.User.UserName</div>
                                             </div>
                                             <div class="chat-text">
