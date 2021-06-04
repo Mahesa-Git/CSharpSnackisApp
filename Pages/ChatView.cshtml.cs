@@ -32,6 +32,8 @@ namespace CSharpSnackisApp.Pages
         public string UserID { get; set; }
         [BindProperty]
         public string RecipantID { get; set; }
+        [BindProperty]
+        public List<string> RecipantIDs { get; set; }
 
         public ChatViewModel(SnackisAPI client)
         {
@@ -102,11 +104,7 @@ namespace CSharpSnackisApp.Pages
 
             if (!String.IsNullOrEmpty(Token))
             {
-                var values = new Dictionary<string, string>()
-                 {
-                    {"recipantID", $"{RecipantID}"},
-                 };
-                string payload = JsonConvert.SerializeObject(values);
+                string payload = JsonConvert.SerializeObject(RecipantIDs);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
                 HttpResponseMessage response = await _client.PostAsync("/Chat/NewChat", content);
@@ -138,7 +136,6 @@ namespace CSharpSnackisApp.Pages
                 Message = "Du måste logga in först";
                 return Page();
             }
-
         }
         public async Task<IActionResult> OnPostSelectedChat() //VALD CHATT, TAR IN CHATID, SÄTT PROPERTY I TOOLBOX KÖR EN ONGET. KOLLA TOKEN
         {

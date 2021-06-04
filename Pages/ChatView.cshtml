@@ -5,160 +5,147 @@
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <div class="container">
-
-    <!-- Page header start -->
     <div class="page-title">
         <div class="row gutters">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                 <h5 class="title">Chattar</h5>
                 @if(Model.Message is not null)
-                {
+                 {
                     <h5 class="title text-danger">@Model.Message</h5>
-                }
+                 }
             </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12"> </div>
         </div>
     </div>
-    <!-- Page header end -->
-    <!-- Content wrapper start -->
     <div class="content-wrapper">
-
-        <!-- Row start -->
         <div class="row gutters">
-
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-
                 <div class="card m-0">
-
-                    <!-- Nedan = VÄLJA PERSON TILL GC -->
                     <div class="row no-gutters">
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                             <form asp-page-handler="NewChat">
                                 <div class="users-container form-group">
-                                    <h5 class="title">PERSONER NY CHATT</h5>
-                                    <select asp-for="RecipantID" class="form-control">
+                                    <h5 class="title">NY CHATT</h5>
+                                    <select asp-for="RecipantIDs" class="form-control" multiple>
                                         @if(Model.Users != null)
                                          {
-
                                              @foreach (var user in Model.Users)
-                                             {
+                                              {
                                                 <option value="@user.Id">@user.UserName</option>
-                                             }
-                                        }
+                                              }
+                                         }
                                     </select>
                                     <div class="form-group">
                                         <input style="width : 200px" type="submit" value="Skapa chatt" class="btn btn-primary" />
                                     </div>
                                 </div>
                             </form>
-                            <!-- Nedan = AKTIVA CHATS-->
                             <div class="users-container">
                                 <h5 class="title">AKTIVA CHATTAR</h5>
                                 <ul class="users">
                                     @if(Model.GroupChats != null)
-                                {
-                    
-            
-                                    @foreach (var groupChat in Model.GroupChats)
-                                    {
-                                         var user = groupChat.Users.Where(x => x.Id != Model.UserID).FirstOrDefault(); 
+                                     {
+                                        @foreach (var groupChat in Model.GroupChats)
+                                         {
+                                             var user = groupChat.Users.Where(x => x.Id != Model.UserID).FirstOrDefault(); 
 
-                                    <li class="person" data-chat="person1">
-                                        <div class="user">
-                                            @if (user.Image == null)
-                                            {
-                                                <img src="img/NoPicture.jpg">
-                                            }
-                                            else
-                                            {
-                                                <img src="img/@user.Image">
-                                            }
-                                        </div>
-                                        <p class="name-time">
-                                            <span class="name">@user.UserName</span>
-                                        </p>
-                                        <form asp-page-handler="SelectedChat">
-                                            <div class="form-group" style="visibility: hidden">
-                                                <input asp-for="GroupChatID" value="@groupChat.GroupChatID" class="form-control">
-                                                <span asp-validation-for="GroupChatID" class="text-danger"></span>
-                                            </div>
-                                            <input style="width : 200px" type="submit" value="Visa chatt" class="btn btn-primary" />
-                                        </form>
-                                    </li>
-	                                }
-                                    }
+                                         <li class="person" data-chat="person1">
+                                             <div class="user">
+                                                 @if (user.Image == null)
+                                                 {
+                                                     <img src="img/NoPicture.jpg">
+                                                 }
+                                                 else
+                                                 {
+                                                     <img src="img/@user.Image">
+                                                 }
+                                             </div>
+                                             <p class="name-time">
+                                                 <span class="name">
+                                                     @foreach (var userName in groupChat.Users.Where(x => x.Id != Model.UserID))
+                                                     {
+                                                         string name = $"{userName.UserName}, ";
+                                                         @name
+                                                     }
+                                                 </span>
+                                             </p>
+                                             <form asp-page-handler="SelectedChat">
+                                                 <div class="form-group" style="visibility: hidden">
+                                                     <input asp-for="GroupChatID" value="@groupChat.GroupChatID" class="form-control">
+                                                     <span asp-validation-for="GroupChatID" class="text-danger"></span>
+                                                 </div>
+                                                 <input style="width : 200px" type="submit" value="Visa chatt" class="btn btn-primary" />
+                                             </form>
+                                         </li>
+	                                     }
+                                     }
                                 </ul>
                             </div>
                         </div>
-                            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
-                                <div class="selected-user">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                            <div class="selected-user">
+                                @if(Model.SelectedGroupChat != null)
+                                 {
+                                    <span>Till: 
+                                        <span class="name">
+                                            @foreach (var userName in Model.SelectedGroupChat.Users.Where(x => x.Id != Model.UserID))
+                                            {
+                                                string name = $"{userName.UserName}, ";
+                                                @name
+                                            }
+                                        </span>
+                                    </span> 
+                                 }
+                                 else
+                                 {
+                                     <span>Till: <span class="name"></span></span>
+                                 }
+                            </div>
+                            <div class="chat-container">
+                                <ul class="chat-box chatContainerScroll">
                                     @if(Model.SelectedGroupChat != null)
-                                    {
-
-                                    var userName = Model.SelectedGroupChat.Users.Where(x => x.Id != Model.UserID).FirstOrDefault();
-                                    <span>Till: <span class="name">@userName.UserName</span></span> 
-                                      }
-                                        else
-                                        {
-                                            <span>Till: <span class="name"></span></span>
-                                        }
-                                    
-                                </div>
-                                <div class="chat-container">
-                                    <ul class="chat-box chatContainerScroll">
-                                        @if(Model.SelectedGroupChat != null)
-                                        {
-
+                                     {
                                         @foreach (var reply in Model.SelectedGroupChat.Replies)
-                                                {
-                                                    var side = reply.User.Id == Model.UserID ? "chat-right" : "chat-left";
-                                                    
-                                        <li class="@side">
-                                            <div class="chat-avatar">
-                                                @if (reply.User.Image == null)
-                                                {
-                                                    <img src="img/NoPicture.jpg">
-                                                }
-                                                else
-                                                {
-                                                    <img src="img/@reply.User.Image">
-                                                    
-                                                }
-                                                <div class="chat-name">@reply.User.UserName</div>
-                                            </div>
-                                            <div class="chat-text">
-                                                @reply.BodyText
-                                            </div>
-                                            <div class="chat-hour">@reply.CreateDate <span class="fa fa-check-circle"></span></div>
-                                        </li>
-                                        }
-                                        }
-                                    </ul>
-                                    <form asp-page-handler="NewReplyInChat">
-                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                                        <div class="form-group" style="visibility: hidden">
-                                            <input asp-for="GroupChatID" class="form-control" value="@Model.GroupChatID" />
-                                            <span asp-validation-for="GroupChatID" class="text-danger"></span>
-                                        </div>
-                                        <div class="form-group mt-3 mb-0">
-                                            <textarea class="form-control" asp-for="BodyText" rows="3" placeholder="Skriv ett meddelande"></textarea>
-                                            <span asp-validation-for="BodyText" class="text-danger"></span>
-                                        </div>
-                                        <input style="width : 200px" type="submit" value="Skicka" class="btn btn-primary" />
-                                    </form>
-                                </div>
+                                         {
+                                            var side = reply.User.Id == Model.UserID ? "chat-right" : "chat-left";
+                                            <li class="@side">
+                                                <div class="chat-avatar">
+                                                    @if (reply.User.Image == null)
+                                                    {
+                                                        <img src="img/NoPicture.jpg">
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="img/@reply.User.Image">
+                                                        
+                                                    }
+                                                    <div class="chat-name">@reply.User.UserName</div>
+                                                </div>
+                                                <div class="chat-text">
+                                                    @reply.BodyText
+                                                </div>
+                                                <div class="chat-hour">@reply.CreateDate <span class="fa fa-check-circle"></span></div>
+                                            </li>
+                                         }
+                                     }
+                                </ul>
+                                <form asp-page-handler="NewReplyInChat">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-group" style="visibility: hidden">
+                                        <input asp-for="GroupChatID" class="form-control" value="@Model.GroupChatID" />
+                                        <span asp-validation-for="GroupChatID" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group mt-3 mb-0">
+                                        <textarea class="form-control" asp-for="BodyText" rows="3" placeholder="Skriv ett meddelande"></textarea>
+                                        <span asp-validation-for="BodyText" class="text-danger"></span>
+                                    </div>
+                                    <input style="width : 200px" type="submit" value="Skicka" class="btn btn-primary" />
+                                </form>
                             </div>
                         </div>
-                    <!-- Row end -->
+                    </div>
                 </div>
-
             </div>
-
         </div>
-        <!-- Row end -->
-
     </div>
-    <!-- Content wrapper end -->
-
 </div>
