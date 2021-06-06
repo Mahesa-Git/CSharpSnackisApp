@@ -149,7 +149,8 @@ namespace CSharpSnackisApp.Pages
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    return RedirectToPage("/Index");
+                    IActionResult resultPage = await OnGetAsync();
+                    return resultPage;
                 }
                 else
                 {
@@ -161,6 +162,47 @@ namespace CSharpSnackisApp.Pages
             else
             {
                 Message = "Det gick inte att skapa kategorin";
+                return Page();
+            }
+        }
+
+        public async Task<IActionResult> OnPostEditCategory()
+        {
+
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"title", $"{Title}"},
+                    {"description", $"{Description}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync($"/AdminPost/UpdateCategory/{CategoryID}", content);
+
+            string request = response.Content.ReadAsStringAsync().Result;
+
+            if (!String.IsNullOrEmpty(token))
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    IActionResult resultPage = await OnGetAsync();
+                    return resultPage;
+                }
+                else
+                {
+                    Message = "Kunde inte ändra ämnet";
+                    return Page();
+                }
+            }
+            else
+            {
+                Message = "Det gick inte att ändra ämnet";
                 return Page();
             }
         }
