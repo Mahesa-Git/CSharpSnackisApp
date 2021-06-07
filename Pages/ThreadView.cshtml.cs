@@ -65,6 +65,7 @@ namespace CSharpSnackisApp.Pages
                 UserButtonVisibility = false;
             else
                 UserButtonVisibility = true;
+
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadThreadsInTopic/{TopicID}");
             var request = response.Content.ReadAsStringAsync().Result;
 

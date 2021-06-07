@@ -1,0 +1,110 @@
+﻿@page
+@model CSharpSnackisApp.Pages.UserViewModel
+@{
+    var EditProfileText = Guid.NewGuid().ToString();
+}
+
+
+<div class="container">
+    <div class="main-body">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="Index">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+                </ol>
+            </nav>
+            <!-- /Breadcrumb -->
+
+            <div class="row gutters-sm">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <img src="~/img/@Model._userPageResponseModel.Image" alt="Admin" class="rounded-circle" width="150">
+                                <div class="mt-3">
+                                    <h4>@Model._userPageResponseModel.Username</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Username</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    @Model._userPageResponseModel.Username
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Email</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    @Model._userPageResponseModel.Email
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Land</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    @Model._userPageResponseModel.Country
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                </div>
+                <div class="col-md-8">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h6 class="mb-0">Profil text</h6>
+                                </div>
+                                <div class="col-sm-9 text-secondary">
+                                    @Model._userPageResponseModel.ProfileText
+                                </div>
+                                <div class="forum-title">
+                                    <button class="btn btn-info" onclick="showDiv('@EditProfileText')">Ändra</button>
+                                </div>
+                                <div id="@EditProfileText" style="display: none">
+                                    <form asp-page-handler="EditProfileText">
+                                        <div class="form-group" style="visibility: hidden">
+                                            <input asp-for="UserID" class="form-control" value="@Model._userPageResponseModel.ProfileText" />
+                                            <span asp-validation-for="UserID" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Titel</label>
+                                            <input asp-for="ProfileText" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.ProfileText" />
+                                            <span asp-validation-for="ProfileText" class="text-danger"></span>
+                                        </div>
+                                        <button class="btn btn-danger" type="submit">Ändra</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<div>
+    <a class="btn btn-outline-success" asp-page="Index">Tillbaka till startsidan</a>
+    <a class="btn btn-outline-warning" asp-page="Privacy">Integritetspolicy</a>
+</div>
+<hr />
