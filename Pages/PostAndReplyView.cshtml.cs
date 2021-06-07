@@ -23,6 +23,7 @@ namespace CSharpSnackisApp.Pages
         public List<PostResponseModel> _postResponseModel { get; set; }
         public List<ReplyResponseModel> _replyResponseModel { get; set; }
         public string Message { get; set; }
+        public string ReportMessage { get; set; }
         public bool ButtonVisibility { get; set; }
         public bool UserButtonVisibility { get; set; }
 
@@ -359,6 +360,46 @@ namespace CSharpSnackisApp.Pages
             else
             {
                 Message = "Kunde inte ändra svaret";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostReportPost()
+        {
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            HttpResponseMessage response = await _client.GetAsync($"Post/ReportPost/{PostID}");
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ReportMessage = "Rapport skickad!";
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
+            }
+            else
+            {
+                Message = "Kunde inte skicka rapport, testa senare.";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostReportReply()
+        {
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            HttpResponseMessage response = await _client.GetAsync($"Post/ReportReply/{ReplyID}");
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ReportMessage = "Rapport skickad!";
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
+            }
+            else
+            {
+                Message = "Kunde inte skicka rapport, testa senare.";
                 return Page();
             }
         }

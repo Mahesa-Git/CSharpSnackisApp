@@ -119,7 +119,6 @@ namespace CSharpSnackisApp.Pages
                 Message = "Kunde inte hämta statistiken, kontakta sysadmin";
                 return Page();
             }
-
         }
         public async Task<IActionResult> OnPostBanUser()
         {
@@ -174,6 +173,43 @@ namespace CSharpSnackisApp.Pages
             else
             {
                 Message = "Kunde inte tillåta användaren nu, kontakta sysadmin";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostReviewDone()
+        {
+            try
+            {
+                byte[] tokenByte;
+                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+                Token = Encoding.ASCII.GetString(tokenByte);
+            }
+            catch (Exception)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"type", $"{Type}"},
+                    {"textID", $"{TextID}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PostAsync($"AdminAuth/ReviewDone", content);
+            var request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var result = await OnGetAsync();
+                return result;
+            }
+            else
+            {
+                Message = "Kunde inte registrera den godkända rapporten, kontakta sysadmin";
                 return Page();
             }
         }

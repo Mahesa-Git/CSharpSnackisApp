@@ -3,17 +3,15 @@
 @{
 }
 <body>
-            @if (Model.Message is not null)
-            {
-                @Model.Message
-            }
-            else
-            {
+@if (Model.Message is not null)
+{
+    @Model.Message
+}
+else
+{
     <div class="container-fluid" id="wrapperDiv">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Admin</h1>
-
-            
         </div>
         <div class="row">
             <div class="col-xl-3 col-md-6 mb-4">
@@ -26,7 +24,6 @@
                                 </div>
                                 @if (Model.Statistics is not null)
                                  {
-
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Statistics[0]</div>
                                  }
                             </div>
@@ -46,10 +43,10 @@
                                     Antal poster
                                 </div>
                                 @if (Model.Statistics is not null)
-                                {
+                                 {
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Statistics[1]</div>
 
-                                }
+                                 }
                             </div>
                             <div class="col-auto">
                                 <i class="fa fa-envelope fa-2x text-gray-300"></i>
@@ -69,10 +66,10 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col-auto">
                                         @if (Model.Statistics is not null)
-                                        {
+                                         {
                                         <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@Model.Statistics[2]</div>
 
-                                        }
+                                         }
                                     </div>                                   
                                 </div>
                             </div>
@@ -92,10 +89,10 @@
                                     Objekt för granskning
                                 </div>
                                 @if (Model.Statistics is not null)
-                                {
+                                 {
 
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Statistics[3]</div>
-                                }
+                                 }
                             </div>
                             <div class="col-auto">
                                 <i class="fa fa-eye fa-2x text-gray-300"></i>
@@ -114,23 +111,26 @@
                     <div class="card-body">
                         <div class="chart-area text-center">
                             @if (Model.ReportedObject is not null)
-                            {
+                             {
                                 @foreach (var element in Model.ReportedObject)
-                                {
+                                 {
                                     string pageRoute = null;
                                     string ID = null;
                                     string value = null;
+                                    string type = null;
                                     @if (element is Models.Entities.Reply)
-                                    {
+                                     {
                                         ID = ((Models.Entities.Reply)element).ReplyID;
                                         value = ((Models.Entities.Reply)element).Post.Thread.ThreadID;
                                         pageRoute = "/PostAndReplyView";
-                                    }
+                                        type = "Reply";
+                                     }
                                     @if (element is Models.Entities.Post)
                                     {
                                         ID = ((Models.Entities.Post)element).PostID;
                                         value = ((Models.Entities.Post)element).Thread.ThreadID;
                                         pageRoute = "/PostAndReplyView";
+                                        type = "Post";
 
                                     }
                                     @if (element is Models.Entities.Thread)
@@ -138,30 +138,44 @@
                                         ID = ((Models.Entities.Thread)element).ThreadID;
                                         value = ((Models.Entities.Thread)element).Topic.TopicID;
                                         pageRoute = "/ThreadView";
+                                        type = "Thread";
                                     }
                                     @if (element is Models.Entities.User)
                                     {
                                         ID = ((Models.Entities.User)element).Id;
                                         value = "/UserView";
                                         pageRoute = "/UserView";
+                                        type = "User";
                                     }
-                                    <div class="d-flex flex-row">
-                                        <div class="p-2">
-                                            @{string displayText = $"ID: {ID}";
-                                            }
-                                            @displayText
+                            <div class="d-flex flex-row">
+                                <div class="p-2">
+                                    @{string displayText = $"ID: {ID}";
+                                    }
+                                    @displayText
+                                </div>
+                                <div class="p-2">
+                                    <a class="btn" style="border: none" asp-route-TextID="@value" asp-page="@pageRoute">Granska<i class="fa fa-eye fa-2x text-gray-300"></i></a>
+                                </div>
+                                <div class="p-2">
+                                    <form asp-page-handler="ReviewDone">
+                                        <div class="form-group" style="visibility: hidden">
+                                            <input asp-for="TextID" class="form-control" value="@ID" />
+                                            <span asp-validation-for="UserID" class="text-danger"></span>
                                         </div>
-                                        <div class="p-2">
-                                            <a class="btn" style="border: none" asp-route-TextID="@value" asp-page="@pageRoute">Granska<i class="fa fa-eye fa-2x text-gray-300"></i></a>
+                                        <div class="form-group" style="visibility: hidden">
+                                            <input asp-for="Type" class="form-control" value="@type" />
+                                            <span asp-validation-for="Type" class="text-danger"></span>
                                         </div>
-                                    </div>
-                                }
-                            }
+                                        <button type="submit" class="btn" style="border: none">Granskning klar<i class="fa fa-check-circle-o fa-2x text-success"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                                 }
+                             }
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="col-xl-8 col-lg-7">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -170,45 +184,43 @@
                     <div class="card-body">
                         <div class="chart-area text-center">
 
-                                    @if (Model.Users != null)
-                                    {
-                                        @foreach (var user in Model.Users)
-                                        {
-                                            string banned = user.IsBanned == true ? "Bannad" : "Tillåten";
-                            <div class="d-flex flex-row">
-                                <div class="p-2">
-                                    @user.UserName : @banned
-                                </div>
-                                <div class="p-2">
-                                    <form asp-page-handler="UnBanUser">
-                                        <div class="form-group" style="visibility: hidden">
-                                            <input asp-for="UserID" class="form-control" value="@user.Id" />
-                                            <span asp-validation-for="UserID" class="text-danger"></span>
+                           @if (Model.Users != null)
+                            {
+                               @foreach (var user in Model.Users)
+                                {
+                                    string banned = user.IsBanned == true ? "Bannad" : "Tillåten";
+                                    <div class="d-flex flex-row">
+                                        <div class="p-2">
+                                            @user.UserName : @banned
                                         </div>
+                                    <div class="p-2">
+                                        <form asp-page-handler="UnBanUser">
+                                            <div class="form-group" style="visibility: hidden">
+                                                <input asp-for="UserID" class="form-control" value="@user.Id" />
+                                                <span asp-validation-for="UserID" class="text-danger"></span>
+                                            </div>
                                         <button type="submit" class="btn" style="border: none">Tillåt<i class="fa fa-check-circle-o fa-2x text-success"></i></button>
-                                    </form>
+                                        </form>
+                                    </div>
+                                    <div class="p-2">
+                                        <form asp-page-handler="BanUser">
+                                            <div class="form-group" style="visibility: hidden">
+                                                <input asp-for="UserID" class="form-control" value="@user.Id" />
+                                                <span asp-validation-for="UserID" class="text-danger"></span>
+                                            </div>
+                                            <button type="submit" class="btn" style="border: none">Banna<i class="fa fa-ban fa-2x text-danger"></i></button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div class="p-2">
-                                    <form asp-page-handler="BanUser">
-                                        <div class="form-group" style="visibility: hidden">
-                                            <input asp-for="UserID" class="form-control" value="@user.Id" />
-                                            <span asp-validation-for="UserID" class="text-danger"></span>
-                                        </div>
-                                        <button type="submit" class="btn" style="border: none">Banna<i class="fa fa-ban fa-2x text-danger"></i></button>
-                                    </form>
-                                </div>
-                                </div>
-
                                 }
-                                }
-                            </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-            }
+}
 </body>
 
 

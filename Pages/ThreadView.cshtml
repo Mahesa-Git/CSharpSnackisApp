@@ -26,8 +26,8 @@
                         <h3>Trådar</h3>
                     </div>
                     @if (Model.UserButtonVisibility)
-                            {
-                                var divId1 = Guid.NewGuid().ToString();
+                    {
+                        var divId1 = Guid.NewGuid().ToString();
                         <div class="forum-title">
                             <div class="forum-title">
                                 <button class="btn btn-primary" onclick="showDiv('@divId1')">Ny tråd</button>
@@ -57,38 +57,38 @@
                                 </form>
                             </div>
                         </div>
-                        }
-                        @if (Model.Message is not null)
+                    }
+                    @if (Model.Message is not null)
+                    {
+                        <p>@Model.Message</p>
+                    }
+                    else
+                    {
+                        @foreach (var subject in Model._threadResponseModels)
                         {
-                            <p>@Model.Message</p>
-                        }
-                        else
-                        {
-                            @foreach (var subject in Model._threadResponseModels)
-                            {
-                                <div class="forum-item active">
-                                    <div class="row">
-                                        <div class="col-md-9">
-                                            <div class="forum-icon">
-                                                <i class="fa fa-chevron-circle-right"></i>
-                                            </div>
-                                            <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title</a>
+                            <div class="forum-item active">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="forum-icon">
+                                            <i class="fa fa-chevron-circle-right"></i>
                                         </div>
+                                        <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title</a>
                                     </div>
                                 </div>
-                                @if (subject.ButtonVisibility || Model.ButtonVisibility)
-                                {
-                                    <form asp-page-handler="DeleteThread">
-                                        <div class="form-group" style="visibility: hidden">
-                                            <input asp-for="ThreadID" class="form-control" value="@subject.threadID" />
-                                            <span asp-validation-for="ThreadID" class="text-danger"></span>
-                                        </div>
-                                        <button class="btn btn-danger" type="submit">Radera</button>
-                                    </form>
-                                }
+                            </div>
+                            @if (subject.ButtonVisibility || Model.ButtonVisibility)
+                            {
+                                <form asp-page-handler="DeleteThread">
+                                    <div class="form-group" style="visibility: hidden">
+                                        <input asp-for="ThreadID" class="form-control" value="@subject.threadID" />
+                                        <span asp-validation-for="ThreadID" class="text-danger"></span>
+                                    </div>
+                                    <button class="btn btn-danger" type="submit">Radera</button>
+                                </form>
                             }
                         }
-                    </div>
+                    }
+                </div>
             </div>
         </div>
     </div>

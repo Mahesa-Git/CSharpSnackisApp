@@ -54,6 +54,11 @@ namespace CSharpSnackisApp.Pages
                 Message = "Ingen sådan användare finns registrerad.";
                 return Page();
             }
+            if (request == "banned")
+            {
+                Message = "Du är bannlyst. Skriv ett mail om du tycker det är orättvist.";
+                return Page();
+            }
             //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             //{
             //    MessageMail = "Du har inte bekräftat din E-post än, kika i din mail!";
