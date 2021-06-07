@@ -38,6 +38,8 @@ namespace CSharpSnackisApp.Pages
         public string PostID { get; set; }
         [BindProperty]
         public string ReplyID { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string TextID { get; set; }
 
         public PostAndReplyViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -46,6 +48,7 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnGetAsync()
         {
+            
             string userId = null;
             try
             {
@@ -70,6 +73,11 @@ namespace CSharpSnackisApp.Pages
                 TokenChecker.ThreadID = ThreadID;
             else
                 ThreadID = TokenChecker.ThreadID;
+
+            if (TextID is not null)
+            {
+                ThreadID = TextID;
+            }
 
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadPostsInThread/{ThreadID}");
             var request = response.Content.ReadAsStringAsync().Result;

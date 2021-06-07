@@ -11,7 +11,7 @@
                 <div class="ibox-content m-b-sm border-bottom">
                     <div class="p-xs">
                         <div class="pull-left m-r-md">
-                            <i class="fa fa-globe text-navy mid-icon"></i>
+                            <i class="fa fa-motorcycle text-navy mid-icon"></i>
                         </div>
                         <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
                         <span></span>
@@ -81,7 +81,6 @@
                                                 <p class="text-muted"><span class="text-primary">@subject.user.UserName</span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
                                                 @if (subject.ButtonVisibility || Model.ButtonVisibility)
                                                 {
-
                                                     <form asp-page-handler="DeletePost">
                                                         <div class="form-group" style="visibility: hidden">
                                                             <input asp-for="PostID" class="form-control" value="@subject.postID" />
@@ -89,8 +88,6 @@
                                                         </div>
                                                         <button class="btn btn-danger" type="submit">Radera</button>
                                                     </form>
-
-
 
                                                     <div class="forum-title">
                                                         <button class="btn btn-primary" onclick="showDiv('@DivId2')">Ändra</button>
