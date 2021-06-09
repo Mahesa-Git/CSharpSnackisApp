@@ -105,7 +105,7 @@ namespace CSharpSnackisApp.Pages
             }
             catch (Exception)
             {
-                Message = "Du måste logga in först";
+                Message = "Du mÃ¥ste logga in fÃ¶rst";
                 return Page();
             }
 
@@ -146,20 +146,20 @@ namespace CSharpSnackisApp.Pages
                     }
                     else
                     {
-                        Message = "Något gick tvärfel";
+                        Message = "NÃ¥got gick tvÃ¤rfel";
                         IActionResult resultPage = await OnGetAsync();
                         return resultPage;
                     }
                 }
                 else
                 {
-                    Message = "Ej behörig";
+                    Message = "Ej behÃ¶rig";
                     return Page();
                 }
             }
             else
             {
-                Message = "Du måste logga in först";
+                Message = "Du mÃ¥ste logga in fÃ¶rst";
                 return Page();
             }
         }
@@ -174,7 +174,7 @@ namespace CSharpSnackisApp.Pages
             }
             catch (Exception)
             {
-                Message = "Du måste logga in först";
+                Message = "Du mÃ¥ste logga in fÃ¶rst";
                 return Page();
             }
 
@@ -191,14 +191,14 @@ namespace CSharpSnackisApp.Pages
                 }
                 else
                 {
-                    Message = "Det gick inte att radera tråden";
+                    Message = "Det gick inte att radera trÃ¥den";
                     return Page();
                 }
 
             }
             else
             {
-                Message = "Det gick inte att radera tråden";
+                Message = "Det gick inte att radera trÃ¥den";
                 return Page();
             }
         }
