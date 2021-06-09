@@ -173,24 +173,22 @@ namespace CSharpSnackisApp.Pages
 
             if (!String.IsNullOrEmpty(token))
             {
-                var file = "./wwwroot/img/" + Guid.NewGuid().ToString() + UploadFile.FileName;
+                string file = null;
+                string path = "./wwwroot/img/";
                 if (UploadFile != null)
                 {
-                    using (var fileStream = new FileStream(file, FileMode.Create))
+                    file = Guid.NewGuid().ToString() + UploadFile.FileName;
+                    using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
                     {
                         await UploadFile.CopyToAsync(fileStream);
                     }
                 }
-
-                var savePath = file.Split('/');
-                string value = savePath[3];
-
                 var values = new Dictionary<string, string>()
                  {
                     {"title", $"{Title}"},
                     {"bodyText", $"{BodyText}"},
                     {"threadID", $"{ThreadID}"},
-                    {"image", $"{value}"}
+                    {"image", $"{file}"}
                  };
                 string payload = JsonConvert.SerializeObject(values);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -240,10 +238,21 @@ namespace CSharpSnackisApp.Pages
 
             if (!String.IsNullOrEmpty(token))
             {
+                string file = null; 
+                string path = "./wwwroot/img/";
+                if (UploadFile != null)
+                {
+                    file = Guid.NewGuid().ToString() + UploadFile.FileName;
+                    using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
+                    {
+                        await UploadFile.CopyToAsync(fileStream);
+                    }
+                }
                 var values = new Dictionary<string, string>()
                  {
                     {"bodyText", $"{BodyText}"},
-                    {"postID", $"{PostID}"}
+                    {"postID", $"{PostID}"},
+                    {"image", $"{file}"}
                  };
                 string payload = JsonConvert.SerializeObject(values);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");

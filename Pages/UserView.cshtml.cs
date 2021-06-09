@@ -24,13 +24,11 @@ namespace CSharpSnackisApp.Pages
 
         [BindProperty(SupportsGet = true)]
         public UserPageResponseModel _userPageResponseModel { get; set; }
-
         public User user { get; set; }
         public bool ButtonVisibility { get; set; }
         public bool UserButtonVisibility { get; set; }
         [BindProperty]
         public object UserID { get; set; }
-
         [BindProperty]
         public string ProfileText { get; set; }
         public string Message { get; set; }
@@ -41,10 +39,8 @@ namespace CSharpSnackisApp.Pages
             _logger = logger;
             _client = client;
         }
-
         public async Task<IActionResult> OnGetAsync()
         {
-
             byte[] tokenByte;
             HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
             Token = Encoding.ASCII.GetString(tokenByte);
@@ -71,10 +67,7 @@ namespace CSharpSnackisApp.Pages
                     return RedirectToPage("/Error");
             }
             return RedirectToPage("/Error");
-
         }
-
-
         public async Task<IActionResult> OnPostEditProfileText()
         {
 

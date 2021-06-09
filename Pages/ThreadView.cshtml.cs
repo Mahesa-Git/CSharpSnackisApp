@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -35,6 +36,8 @@ namespace CSharpSnackisApp.Pages
         public string ThreadID { get; set; }
         [BindProperty(SupportsGet = true)]
         public string TextID { get; set; }
+        [BindProperty]
+        public IFormFile UploadFile { get; set; }
 
         public ThreadViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -113,11 +116,22 @@ namespace CSharpSnackisApp.Pages
 
             if (!String.IsNullOrEmpty(token))
             {
+                string file = null;
+                string path = "./wwwroot/img/";
+                if (UploadFile != null)
+                {
+                    file = Guid.NewGuid().ToString() + UploadFile.FileName;
+                    using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
+                    {
+                        await UploadFile.CopyToAsync(fileStream);
+                    }
+                }
                 var values = new Dictionary<string, string>()
                  {
                     {"title", $"{Title}"},
                     {"bodyText", $"{BodyText}"},
-                    {"topicID", $"{TopicID}"}
+                    {"topicID", $"{TopicID}"},
+                    {"image", $"{file}"}
                  };
                 string payload = JsonConvert.SerializeObject(values);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");

@@ -33,7 +33,6 @@
                             <div class="forum-title">
                                 <button class="btn btn-primary" onclick="showDiv('@DivId1')">Skapa ny post</button>
                             </div>
-
                             <div id="@DivId1" style="display: none">
                                 <form asp-page-handler="Post" enctype="multipart/form-data">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -108,12 +107,10 @@
                                                 @subject.bodyText
                                             </p>
                                             <p class="text-muted"><span class="text-primary">@subject.user.UserName</span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
-                                            
                                             @if (!string.IsNullOrEmpty(subject.image))
                                             {
-                                                <img src="img/@subject.image" class="mr-3" width="400" alt="User" />
+                                                <img src="img/@subject.image" class="mr-3 img-thumbnail" alt="User" />
                                             }
-
                                             @if (subject.ButtonVisibility || Model.ButtonVisibility)
                                             {
                                                 @if (subject.isReported && Model.ButtonVisibility)
@@ -153,7 +150,6 @@
                                         </div>
                                         @if (!string.IsNullOrEmpty(Models.Toolbox.TokenChecker.LoggedInUserID))
                                         {
-
                                             if (!subject.postReactions.Users.Any(x => x.Id.Contains(Models.Toolbox.TokenChecker.LoggedInUserID)) && (returnTokenValue || Model.ButtonVisibility))
                                             {
                                                 <form asp-page-handler="AddReaction">
@@ -172,24 +168,23 @@
                                                     </div>
                                                 </form>
                                             }
-
                                             @if (subject.postReactions.Users.Any(x => x.Id.Contains(Models.Toolbox.TokenChecker.LoggedInUserID)) && (returnTokenValue || Model.ButtonVisibility))
                                              {
-                                                    <form asp-page-handler="RemoveReaction">
-                                                        <div class="form-group" style="visibility: hidden">
-                                                            <input asp-for="TextID" class="form-control" value="@subject.postID" />
-                                                            <span asp-validation-for="TextID" class="text-danger"></span>
-                                                        </div>
-                                                        <div class="form-group" style="visibility: hidden">
-                                                            <input asp-for="AddOrRemoveReaction" class="form-control" value="false" />
-                                                            <span asp-validation-for="AddOrRemoveReaction" class="text-danger"></span>
-                                                        </div>
-                                                        <div class="text-muted small text-center align-self-center">
-                                                            <span class="d-none d-sm-inline-block">
-                                                                <button class="btn" style="border: none" type="submit"><i class="fa fa-thumbs-up text-primary">@subject.postReactions.LikeCounter</i>Ta bort gilla</button>
-                                                            </span>
-                                                        </div>
-                                                    </form>
+                                                 <form asp-page-handler="RemoveReaction">
+                                                     <div class="form-group" style="visibility: hidden">
+                                                         <input asp-for="TextID" class="form-control" value="@subject.postID" />
+                                                         <span asp-validation-for="TextID" class="text-danger"></span>
+                                                     </div>
+                                                     <div class="form-group" style="visibility: hidden">
+                                                         <input asp-for="AddOrRemoveReaction" class="form-control" value="false" />
+                                                         <span asp-validation-for="AddOrRemoveReaction" class="text-danger"></span>
+                                                     </div>
+                                                     <div class="text-muted small text-center align-self-center">
+                                                         <span class="d-none d-sm-inline-block">
+                                                             <button class="btn" style="border: none" type="submit"><i class="fa fa-thumbs-up text-primary">@subject.postReactions.LikeCounter</i>Ta bort gilla</button>
+                                                         </span>
+                                                     </div>
+                                                 </form>
                                              }
                                         }
                                     </div>
@@ -228,6 +223,10 @@
                                                                 @reply.bodyText
                                                             </p>
                                                             <p class="text-muted"><span class="text-primary">@reply.user.UserName</span> svarade <span class="text-secondary font-weight-bold">@reply.createDate</span></p>
+                                                            @if (!string.IsNullOrEmpty(reply.Image))
+                                                            {
+                                                                <img src="img/@reply.Image" class="mr-3 img-thumbnail" alt="User" />
+                                                            }
                                                             @if (reply.ButtonVisibility || Model.ButtonVisibility)
                                                             {
                                                                 @if (reply.isReported && Model.ButtonVisibility)
@@ -262,12 +261,8 @@
                                                                 </div>
                                                             }
                                                         </div>
-
-                                              
-
                                                         @if (!string.IsNullOrEmpty(Models.Toolbox.TokenChecker.LoggedInUserID))
                                                         {
-
                                                             if (!reply.postReactions.Users.Any(x => x.Id.Contains(Models.Toolbox.TokenChecker.LoggedInUserID)) && (returnTokenValue || Model.ButtonVisibility))
                                                             {
                                                                 <form asp-page-handler="AddReplyReaction">
@@ -286,7 +281,6 @@
                                                                     </div>
                                                                 </form>
                                                             }
-
                                                             @if (reply.postReactions.Users.Any(x => x.Id.Contains(Models.Toolbox.TokenChecker.LoggedInUserID)) && (returnTokenValue || Model.ButtonVisibility))
                                                             {
                                                                 <form asp-page-handler="RemoveReplyReaction">
@@ -306,18 +300,12 @@
                                                                 </form>
                                                             }
                                                         }
-
-                                                      
-
-                                                        
-
                                                     </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         }
                                     }
-
                                     @if (returnTokenValue || Model.ButtonVisibility)
                                     {
                                         var DivId4 = Guid.NewGuid().ToString();
@@ -325,20 +313,22 @@
                                             <button class="btn btn-primary" onclick="showDiv('@DivId4')">Svara</button>
                                         </div>
                                         <div class="forum-title" id="@DivId4" style="display: none">
-                                            <form asp-page-handler="Reply">
+                                            <form asp-page-handler="Reply" enctype="multipart/form-data">
                                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
                                                 <div class="form-group" style="visibility: hidden">
                                                     <input asp-for="PostID" class="form-control" value="@subject.postID" />
                                                     <span asp-validation-for="PostID" class="text-danger"></span>
                                                 </div>
-
-
                                                 <div class="form-group">
                                                     <label class="control-label">Skriv ett svar.</label>
                                                     <textarea autocomplete="off" asp-for="BodyText" class="form-control"></textarea>
                                                     <span asp-validation-for="BodyText" class="text-danger"></span>
                                                 </div>
+                                                <fieldset class="form-group">
+                                                    <label for="Image">Bild</label>
+                                                    <input asp-for="UploadFile" class="form-control" type="file" />
+                                                    <br />
+                                                </fieldset>
                                                 <button class="btn btn-dark" type="submit">Svara</button>
                                             </form>
                                         </div>

@@ -10,6 +10,7 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public User user { get; set; }
         public string title { get; set; }
         public string bodyText { get; set; }
+        public string Image { get; set; }
         public DateTime createDate { get; set; }
         public DateTime editDate { get; set; }
         public bool isReported { get; set; }
