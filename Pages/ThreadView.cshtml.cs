@@ -33,6 +33,8 @@ namespace CSharpSnackisApp.Pages
         public bool UserButtonVisibility { get; set; }
         [BindProperty]
         public string ThreadID { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string TextID { get; set; }
 
         public ThreadViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -65,6 +67,12 @@ namespace CSharpSnackisApp.Pages
                 UserButtonVisibility = false;
             else
                 UserButtonVisibility = true;
+
+            if (TextID is not null)
+            {
+                TopicID = TextID;
+            }
+
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadThreadsInTopic/{TopicID}");
             var request = response.Content.ReadAsStringAsync().Result;
 

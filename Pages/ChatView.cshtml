@@ -4,7 +4,7 @@
 }
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<div class="container">
+<div class="container" id="wrapperDiv">
     <div class="page-title">
         <div class="row gutters">
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -51,9 +51,9 @@
 
                                          <li class="person" data-chat="person1">
                                              <div class="user">
-                                                 @if (user.Image == null)
+                                                 @if (string.IsNullOrEmpty(user.Image))
                                                  {
-                                                     <img src="img/NoPicture.jpg">
+                                                     <img src="~/img/NoPicture.jpg">
                                                  }
                                                  else
                                                  {
@@ -110,9 +110,9 @@
                                             var side = reply.User.Id == Model.UserID ? "chat-right" : "chat-left";
                                             <li class="@side">
                                                 <div class="chat-avatar">
-                                                    @if (reply.User.Image == null)
+                                                    @if (string.IsNullOrEmpty(reply.User.Image))
                                                     {
-                                                        <img src="img/NoPicture.jpg">
+                                                        <img src="~/img/NoPicture.jpg">
                                                     }
                                                     else
                                                     {
