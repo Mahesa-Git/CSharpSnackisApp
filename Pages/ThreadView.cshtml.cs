@@ -33,6 +33,8 @@ namespace CSharpSnackisApp.Pages
         public bool UserButtonVisibility { get; set; }
         [BindProperty]
         public string ThreadID { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string TextID { get; set; }
 
         public ThreadViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -66,6 +68,11 @@ namespace CSharpSnackisApp.Pages
             else
                 UserButtonVisibility = true;
 
+            if (TextID is not null)
+            {
+                TopicID = TextID;
+            }
+
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadThreadsInTopic/{TopicID}");
             var request = response.Content.ReadAsStringAsync().Result;
 
@@ -98,7 +105,7 @@ namespace CSharpSnackisApp.Pages
             }
             catch (Exception)
             {
-                Message = "Du måste logga in först";
+                Message = "Du mÃ¥ste logga in fÃ¶rst";
                 return Page();
             }
 
@@ -139,20 +146,20 @@ namespace CSharpSnackisApp.Pages
                     }
                     else
                     {
-                        Message = "Något gick tvärfel";
+                        Message = "NÃ¥got gick tvÃ¤rfel";
                         IActionResult resultPage = await OnGetAsync();
                         return resultPage;
                     }
                 }
                 else
                 {
-                    Message = "Ej behörig";
+                    Message = "Ej behÃ¶rig";
                     return Page();
                 }
             }
             else
             {
-                Message = "Du måste logga in först";
+                Message = "Du mÃ¥ste logga in fÃ¶rst";
                 return Page();
             }
         }
@@ -167,7 +174,7 @@ namespace CSharpSnackisApp.Pages
             }
             catch (Exception)
             {
-                Message = "Du måste logga in först";
+                Message = "Du mÃ¥ste logga in fÃ¶rst";
                 return Page();
             }
 
@@ -184,14 +191,14 @@ namespace CSharpSnackisApp.Pages
                 }
                 else
                 {
-                    Message = "Det gick inte att radera tråden";
+                    Message = "Det gick inte att radera trÃ¥den";
                     return Page();
                 }
 
             }
             else
             {
-                Message = "Det gick inte att radera tråden";
+                Message = "Det gick inte att radera trÃ¥den";
                 return Page();
             }
         }
