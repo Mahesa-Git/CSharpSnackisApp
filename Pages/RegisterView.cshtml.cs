@@ -44,15 +44,6 @@ namespace CSharpSnackisApp.Pages
             if (UploadFile != null)
             {
                 var file = "./wwwroot/img/" + Guid.NewGuid().ToString() + UploadFile.FileName;
-                var fileNameDoubleCheck = Directory.GetFiles("./wwwroot/img/");
-                //foreach (var item in fileNameDoubleCheck)
-                //{
-                //    if (item == file)
-                //    {
-                //        Message = "Välj en annan bild";
-                //        return Page();
-                //    }
-                //}
 
                 using (var fileStream = new FileStream(file, FileMode.Create))
                 {

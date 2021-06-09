@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -44,6 +45,8 @@ namespace CSharpSnackisApp.Pages
         public string TextID { get; set; }
         [BindProperty]
         public string AddOrRemoveReaction { get; set; }
+        [BindProperty]
+        public IFormFile UploadFile { get; set; }
 
         public PostAndReplyViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -151,6 +154,8 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostPost()
         {
+
+
             string token = null;
             try
             {
@@ -168,11 +173,24 @@ namespace CSharpSnackisApp.Pages
 
             if (!String.IsNullOrEmpty(token))
             {
+                var file = "./wwwroot/img/" + Guid.NewGuid().ToString() + UploadFile.FileName;
+                if (UploadFile != null)
+                {
+                    using (var fileStream = new FileStream(file, FileMode.Create))
+                    {
+                        await UploadFile.CopyToAsync(fileStream);
+                    }
+                }
+
+                var savePath = file.Split('/');
+                string value = savePath[3];
+
                 var values = new Dictionary<string, string>()
                  {
                     {"title", $"{Title}"},
                     {"bodyText", $"{BodyText}"},
-                    {"threadID", $"{ThreadID}"}
+                    {"threadID", $"{ThreadID}"},
+                    {"image", $"{value}"}
                  };
                 string payload = JsonConvert.SerializeObject(values);
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -557,8 +575,7 @@ namespace CSharpSnackisApp.Pages
                 return Page();
             }
         }
-
-
-
     }
 }
+
+   
