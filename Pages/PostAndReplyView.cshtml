@@ -1,7 +1,7 @@
 ﻿@page
 @model CSharpSnackisApp.Pages.PostAndReplyViewModel
 @{
-
+    bool returnTokenValue = Models.Toolbox.TokenChecker.UserStatus;
 }
 <div class="container">
     <div class="row">
@@ -26,7 +26,7 @@
                         <h3>Tråd</h3>
                     </div>
                     @{ var DivId1 = Guid.NewGuid().ToString();}
-                    
+
                     @if (Model.UserButtonVisibility)
                     {
                         <div class="forum-title">
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                     }
-                    @if(Model.ReportMessage is not null)
+                    @if (Model.ReportMessage is not null)
                     {
                         <p class="text-danger">@Model.ReportMessage</p>
                     }
@@ -75,7 +75,7 @@
                             <div class="forum-item active">
                                 <div class="card mb-2">
                                     <div class="card-body p-2 p-sm-3">
-                                        @if (subject.ButtonVisibility || Model.ButtonVisibility)
+                                        @if (returnTokenValue || Model.ButtonVisibility)
                                         {
                                             <form asp-page-handler="ReportPost">
                                                 <div class="form-group" style="visibility: hidden">
@@ -85,66 +85,103 @@
                                                 <button class="btn" style="border: none" type="submit">Rapportera<i class="fa fa-bullhorn text-danger"></i></button>
                                             </form>
                                         }
-                                            <div class="media forum-item">
-                                                <a href="#" data-toggle="collapse" data-target=".forum-content">
-                                                    @if (string.IsNullOrEmpty(subject.image))
-                                                    {
-                                                        <img src="~/img/NoPicture.jpg" class="mr-3 rounded-circle" width="50" alt="User" />
-                                                    }
-                                                    else
-                                                    {
-                                                        <img src="img/@subject.user.Image" class="mr-3 rounded-circle" width="50" alt="User" />
-                                                    }
-                                                </a>
-                                                <div class="media-body">
-                                                    <h6><b>@subject.title</b></h6>
-                                                    <p class="text-secondary">
-                                                        @subject.bodyText
-                                                    </p>
-                                                    <p class="text-muted"><span class="text-primary">@subject.user.UserName</span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
-                                                    @if (subject.ButtonVisibility || Model.ButtonVisibility)
-                                                    {
-                                                        @if (subject.isReported && Model.ButtonVisibility)
-                                                        {
-                                                            <i class="fa fa-eye text-danger">Rapporterad</i>
-                                                        }
-                                                        <form asp-page-handler="DeletePost">
-                                                            <div class="form-group" style="visibility: hidden">
-                                                                <input asp-for="PostID" class="form-control" value="@subject.postID" />
-                                                                <span asp-validation-for="Title" class="text-danger"></span>
-                                                            </div>
-                                                            <button class="btn btn-danger" type="submit">Radera</button>
-                                                        </form>
-                                                        <div class="forum-title">
-                                                            <button class="btn btn-primary" onclick="showDiv('@DivId2')">Ändra</button>
-                                                        </div>
-                                                        <div id="@DivId2" style="display: none">
-                                                            <form asp-page-handler="EditPost">
-                                                                <div class="form-group" style="visibility: hidden">
-                                                                    <input asp-for="PostID" class="form-control" value="@subject.postID" />
-                                                                    <span asp-validation-for="Title" class="text-danger"></span>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label class="control-label">Titel</label>
-                                                                    <input asp-for="Title" class="form-control" autocomplete="off" value="@subject.title" />
-                                                                    <span asp-validation-for="Title" class="text-danger"></span>
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <label class="control-label">Inläggstext</label>
-                                                                    <textarea asp-for="BodyText" class="form-control"></textarea>
-                                                                    <span asp-validation-for="BodyText" class="text-danger"></span>
-                                                                </div>
-                                                                <button class="btn btn-danger" type="submit">Ändra</button>
-                                                            </form>
-                                                        </div>
-                                                    }
+                                    <div class="media forum-item">
+                                        <a href="#" data-toggle="collapse" data-target=".forum-content">
+                                            @if (string.IsNullOrEmpty(subject.user.Image))
+                                            {
+                                                <img src="~/img/NoPicture.jpg" class="mr-3 rounded-circle" width="50" alt="User" />
+                                            }
+                                            else
+                                            {
+                                                <img src="img/@subject.user.Image" class="mr-3 rounded-circle" width="50" alt="User" />
+                                            }
+                                        </a>
+                                        <div class="media-body">
+                                            <h6><b>@subject.title</b></h6>
+                                            <p class="text-secondary">
+                                                @subject.bodyText
+                                            </p>
+                                            <p class="text-muted"><span class="text-primary">@subject.user.UserName</span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
+                                            @if (subject.ButtonVisibility || Model.ButtonVisibility)
+                                            {
+                                                @if (subject.isReported && Model.ButtonVisibility)
+                                                {
+                                                    <i class="fa fa-eye text-danger">Rapporterad</i>
+                                                }
+                                                <form asp-page-handler="DeletePost">
+                                                    <div class="form-group" style="visibility: hidden">
+                                                        <input asp-for="PostID" class="form-control" value="@subject.postID" />
+                                                        <span asp-validation-for="Title" class="text-danger"></span>
+                                                    </div>
+                                                    <button class="btn btn-danger" type="submit">Radera</button>
+                                                </form>
+                                                <div class="forum-title">
+                                                    <button class="btn btn-primary" onclick="showDiv('@DivId2')">Ändra</button>
                                                 </div>
-                                                @*<div class="text-muted small text-center align-self-center">
-                    <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 49</span>
-                    <span><i class="far fa-comment ml-2"></i> 9</span>
-                </div>*@     <!---här fixar vi like och dislike senare ---->
-                                            </div>
+                                                <div id="@DivId2" style="display: none">
+                                                    <form asp-page-handler="EditPost">
+                                                        <div class="form-group" style="visibility: hidden">
+                                                            <input asp-for="PostID" class="form-control" value="@subject.postID" />
+                                                            <span asp-validation-for="Title" class="text-danger"></span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label">Titel</label>
+                                                            <input asp-for="Title" class="form-control" autocomplete="off" value="@subject.title" />
+                                                            <span asp-validation-for="Title" class="text-danger"></span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label">Inläggstext</label>
+                                                            <textarea asp-for="BodyText" class="form-control"></textarea>
+                                                            <span asp-validation-for="BodyText" class="text-danger"></span>
+                                                        </div>
+                                                        <button class="btn btn-danger" type="submit">Ändra</button>
+                                                    </form>
+                                                </div>
+                                            }
                                         </div>
+                                        @if (!string.IsNullOrEmpty(Models.Toolbox.TokenChecker.LoggedInUserID))
+                                        {
+
+                                            if (!subject.postReactions.Users.Any(x => x.Id.Contains(Models.Toolbox.TokenChecker.LoggedInUserID)) && (returnTokenValue || Model.ButtonVisibility))
+                                            {
+                                                <form asp-page-handler="AddReaction">
+                                                    <div class="form-group" style="visibility: hidden">
+                                                        <input asp-for="TextID" class="form-control" value="@subject.postID" />
+                                                        <span asp-validation-for="TextID" class="text-danger"></span>
+                                                    </div>
+                                                    <div class="form-group" style="visibility: hidden">
+                                                        <input asp-for="AddOrRemoveReaction" class="form-control" value="true" />
+                                                        <span asp-validation-for="AddOrRemoveReaction" class="text-danger"></span>
+                                                    </div>
+                                                    <div class="text-muted small text-center align-self-center">
+                                                        <span class="d-none d-sm-inline-block">
+                                                            <button class="btn" style="border: none" type="submit"><i class="fa fa-thumbs-up text-black-50">@subject.postReactions.LikeCounter</i>Gilla</button>
+                                                        </span>
+                                                    </div>
+                                                </form>
+                                            }
+
+                                            @if (subject.postReactions.Users.Any(x => x.Id.Contains(Models.Toolbox.TokenChecker.LoggedInUserID)) && (returnTokenValue || Model.ButtonVisibility))
+                                             {
+                                                    <form asp-page-handler="RemoveReaction">
+                                                        <div class="form-group" style="visibility: hidden">
+                                                            <input asp-for="TextID" class="form-control" value="@subject.postID" />
+                                                            <span asp-validation-for="TextID" class="text-danger"></span>
+                                                        </div>
+                                                        <div class="form-group" style="visibility: hidden">
+                                                            <input asp-for="AddOrRemoveReaction" class="form-control" value="false" />
+                                                            <span asp-validation-for="AddOrRemoveReaction" class="text-danger"></span>
+                                                        </div>
+                                                        <div class="text-muted small text-center align-self-center">
+                                                            <span class="d-none d-sm-inline-block">
+                                                                <button class="btn style="border: none" type="submit"><i class="fa fa-thumbs-up text-primary">@subject.postReactions.LikeCounter</i>Ta bort gilla</button>
+                                                            </span>
+                                                        </div>
+                                                    </form>
+                                             }
+                                        }
+                                    </div>
+                                    </div>
 
                                     @if (subject.replies.Count > 0 || subject.replies is not null)
                                     {
@@ -153,8 +190,8 @@
                                             <div style="padding-left: 150px">
                                                 <div class="card mb-2, text-white">
                                                     <div class="card-body p-2 p-sm-3">
-                                                        @if(reply.ButtonVisibility || Model.ButtonVisibility)
-                                                         {
+                                                        @if (returnTokenValue || Model.ButtonVisibility)
+                                                        {
                                                             <form asp-page-handler="ReportReply">
                                                                 <div class="form-group" style="visibility: hidden">
                                                                     <input asp-for="ReplyID" class="form-control" value="@reply.replyID" />
@@ -162,7 +199,7 @@
                                                                 </div>
                                                                 <button class="btn" style="border: none" type="submit">Rapportera<i class="fa fa-bullhorn text-danger"></i></button>
                                                             </form>
-                                                         }
+                                                        }
                                                         <div class="media forum-item">
                                                             <a href="#" data-toggle="collapse" data-target=".forum-content">
                                                                 @if (string.IsNullOrEmpty(reply.user.Image))
@@ -214,16 +251,17 @@
                                                                 }
                                                             </div>
                                                             @*<div class="text-muted small text-center align-self-center">
-                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 49</span>
-                <span><i class="far fa-comment ml-2"></i> 9</span>
-            </div>*@     <!---här fixar vi like och dislike senare ---->
+                                                                    <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 49</span>
+                                                                    <span><i class="far fa-comment ml-2"></i> 9</span>
+                                                                </div>*@     <!---här fixar vi like och dislike senare ---->
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         }
                                     }
-                                    @if (subject.ButtonVisibility || Model.ButtonVisibility)
+
+                                    @if (returnTokenValue || Model.ButtonVisibility)
                                     {
                                         var DivId4 = Guid.NewGuid().ToString();
                                         <div class="forum-title">

@@ -22,6 +22,7 @@ namespace CSharpSnackisApp.Pages
         private readonly ILogger<IndexModel> _logger;
         public List<PostResponseModel> _postResponseModel { get; set; }
         public List<ReplyResponseModel> _replyResponseModel { get; set; }
+        public PostReactionModel _postReactionModel { get; set; }
         public string Message { get; set; }
         public string ReportMessage { get; set; }
         public bool ButtonVisibility { get; set; }
@@ -41,6 +42,8 @@ namespace CSharpSnackisApp.Pages
         public string ReplyID { get; set; }
         [BindProperty(SupportsGet = true)]
         public string TextID { get; set; }
+        [BindProperty]
+        public string AddOrRemoveReaction { get; set; }
 
         public PostAndReplyViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -96,6 +99,18 @@ namespace CSharpSnackisApp.Pages
                 }
                 foreach (var post in _postResponseModel)
                 {
+                    HttpResponseMessage reactionResponse = await _client.GetAsync($"Post/ReadPostReaction/{post.postID}");
+                    var reactionRequest = reactionResponse.Content.ReadAsStringAsync().Result;
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        post.postReactions = JsonConvert.DeserializeObject<PostReactionModel>(reactionRequest);
+                    }
+                    else
+                    {
+                        Message = "Detta gick åt pipan";
+                        return Page();
+                    }
+
                     response = await _client.GetAsync($"/Post/ReadRepliesToPost/{post.postID}");
                     request = response.Content.ReadAsStringAsync().Result;
                     _replyResponseModel = JsonConvert.DeserializeObject<List<ReplyResponseModel>>(request);
@@ -400,6 +415,65 @@ namespace CSharpSnackisApp.Pages
             else
             {
                 Message = "Kunde inte skicka rapport, testa senare.";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostAddReaction()
+        {
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"textID", $"{TextID}"},
+                    {"addOrRemove", $"{AddOrRemoveReaction}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync("Post/ReactToPost", content);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                TextID = null;
+                var result = await OnGetAsync();
+                return result;
+            }
+            else
+            {
+                Message = "Kunde inte registrera reaktion.";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostRemoveReaction()
+        {
+
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"textID", $"{TextID}"},
+                    {"addOrRemove", $"{AddOrRemoveReaction}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync("Post/ReactToPost", content);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                TextID = null;
+                var result = await OnGetAsync();
+                return result;
+            }
+            else
+            {
+                Message = "Kunde inte avregistrera reaktion.";
                 return Page();
             }
         }

@@ -16,7 +16,7 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public bool ButtonVisibility { get; set; }
         public User user { get; set; }
         public Thread thread { get; set; }
-        public List<PostReaction> postReactions { get; set; }
+        public PostReactionModel postReactions { get; set; }
         public List<ReplyResponseModel> replies { get; set; }
 
     }
