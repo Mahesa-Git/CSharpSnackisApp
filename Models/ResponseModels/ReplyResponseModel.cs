@@ -14,5 +14,6 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public User user { get; set; }
         public Post post { get; set; }
         public GroupChat groupChat { get; set; }
+        public PostReactionModel postReactions { get; set; }
     }
 }
