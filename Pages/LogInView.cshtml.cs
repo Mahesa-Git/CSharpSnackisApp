@@ -56,7 +56,7 @@ namespace CSharpSnackisApp.Pages
             }
             if (request == "banned")
             {
-                Message = "Du är bannlyst. Skriv ett mail om du tycker det är orättvist.";
+                Message = "Du är bannlyst. Skriv ett mail om du tycker det är orättvist. Shame! Shame!";
                 return Page();
             }
             //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
