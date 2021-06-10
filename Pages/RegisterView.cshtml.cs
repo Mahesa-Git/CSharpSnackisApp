@@ -41,10 +41,12 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            var file = Guid.NewGuid().ToString() + UploadFile.FileName;
+
+            string file = null;
             string path = "./wwwroot/img/";
             if (UploadFile != null)
             {
+                file = Guid.NewGuid().ToString() + UploadFile.FileName;
                 using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
                 {
                     await UploadFile.CopyToAsync(fileStream);
