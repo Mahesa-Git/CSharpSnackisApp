@@ -20,7 +20,7 @@
                 <div class="ibox-content forum-container">
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
-                            <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
+                            <small>Antal poster i tråden: @Model._threadResponseModels.Select(x => x.posts).Count()</small>
 
                         </div>
                         <h3>Trådar</h3>
@@ -77,9 +77,12 @@
                                         <div class="forum-icon">
                                             <i class="fa fa-chevron-circle-right"></i>
                                         </div>
-                                        <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title</a>
+                                        <div class="media-body">
+
+                                            <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title </a>skrivet av <b>@subject.user.UserName </b>@subject.createDate
+                                        </div>
+                                        </div>
                                     </div>
-                                </div>
                             </div>
                             @if (subject.ButtonVisibility || Model.ButtonVisibility)
                             {

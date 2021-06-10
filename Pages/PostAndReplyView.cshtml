@@ -20,8 +20,7 @@
                 <div class="ibox-content forum-container">
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
-                            <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
-
+                            <small>Antal poster: @Model._postResponseModel.Count()</small>
                         </div>
                         <h3>Tråd</h3>
                     </div>
@@ -117,13 +116,13 @@
                                                 {
                                                     <i class="fa fa-eye text-danger">Rapporterad</i>
                                                 }
-                                                <form asp-page-handler="DeletePost">
-                                                    <div class="form-group" style="visibility: hidden">
-                                                        <input asp-for="PostID" class="form-control" value="@subject.postID" />
-                                                        <span asp-validation-for="Title" class="text-danger"></span>
-                                                    </div>
-                                                    <button class="btn btn-danger" type="submit">Radera</button>
-                                                </form>
+                                                    <form asp-page-handler="DeletePost">
+                                                        <div class="form-group" style="visibility: hidden">
+                                                            <input asp-for="PostID" class="form-control" value="@subject.postID" />
+                                                            <span asp-validation-for="Title" class="text-danger"></span>
+                                                        </div>
+                                                        <button class="btn btn-danger" type="submit">Radera</button>
+                                                    </form>
                                                 <div class="forum-title">
                                                     <button class="btn btn-primary" onclick="showDiv('@DivId2')">Ändra</button>
                                                 </div>

@@ -38,6 +38,7 @@ namespace CSharpSnackisApp.Pages
         public string TextID { get; set; }
         [BindProperty]
         public IFormFile UploadFile { get; set; }
+        public int PostCount { get; set; }
 
         public ThreadViewModel(ILogger<IndexModel> logger, SnackisAPI client)
         {
@@ -86,12 +87,14 @@ namespace CSharpSnackisApp.Pages
                 {
                     foreach (var model in _threadResponseModels)
                     {
+                        
                         if (userId == model.user.Id)
                         {
                             model.ButtonVisibility = true;
                         }
                     }
                 }
+                
                 return Page();
             }
             else

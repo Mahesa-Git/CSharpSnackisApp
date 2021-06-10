@@ -40,7 +40,7 @@ namespace CSharpSnackisApp
             services.AddSession(options =>
             {
                 options.Cookie.Name = ".CSharpSnackis.Session";
-                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.IdleTimeout = TimeSpan.FromMinutes(69);
                 options.Cookie.IsEssential = true;
             });
 

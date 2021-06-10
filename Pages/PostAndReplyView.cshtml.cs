@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -154,8 +155,6 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostPost()
         {
-
-
             string token = null;
             try
             {
@@ -355,7 +354,6 @@ namespace CSharpSnackisApp.Pages
                     Message = "Det gick inte att radera posten";
                     return Page();
                 }
-
             }
             else
             {

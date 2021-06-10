@@ -1,5 +1,6 @@
 ﻿using CSharpSnackisApp.Models.Entities;
 using System;
+using System.Collections.Generic;
 
 namespace CSharpSnackisApp.Models.ResponseModels
 {
@@ -15,7 +16,7 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public DateTime editDate { get; set; }
         public bool isReported { get; set; }
         public Topic topic { get; set; }
-        public object posts { get; set; }
+        public List<object> posts { get; set; }
         public bool ButtonVisibility { get; set; }
     }
 }
