@@ -2,11 +2,21 @@
 @model CSharpSnackisApp.Pages.UserViewModel
 @{
     var EditProfileText = Guid.NewGuid().ToString();
+    var EditUsername = Guid.NewGuid().ToString();
+    var EditEmail = Guid.NewGuid().ToString();
+    var EditCountry = Guid.NewGuid().ToString();
+
+
 }
 
 
 <div class="container">
+
     <div class="main-body">
+        @if (Model.Message is not null)
+        {
+            <p class="text-danger">@Model.Message</p>
+        }
             <nav aria-label="breadcrumb" class="main-breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-page="Index">Till startsidan</a></li>
@@ -37,12 +47,26 @@
                 <div class="col-md-8">
                     <div class="card mb-3">
                         <div class="card-body">
+                                    <button class="btn btn-info" onclick="showDiv('@EditUsername'); showDiv('@EditEmail'); showDiv('@EditCountry')">Ändra uppgifter</button>
+                          <form asp-page-handler="EditUsername">
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <h6 class="mb-0">Username</h6>
+                                <div class="forum-title">
+                                </div>
+                                    <h6 class="mb-0">Användarnamn</h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
                                     @Model._userPageResponseModel.Username
+                                </div>
+                                <div id="@EditUsername" style="display: none">
+                                        
+                                        <div class="form-group">
+                                            <label class="control-label">Användarnamn</label>
+                                            <input asp-for="Username" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Username" />
+                                            <span asp-validation-for="Username" class="text-danger"></span>
+                                        </div>
+
+                                        <button class="btn btn-danger" type="submit">Ändra</button>
                                 </div>
                             </div>
                             <hr>
@@ -53,6 +77,18 @@
                                 <div class="col-sm-9 text-secondary">
                                     @Model._userPageResponseModel.Email
                                 </div>
+
+                                <div id="@EditEmail" style="display: none">
+                                   
+                                    <div class="form-group">
+                                        <label class="control-label">Email</label>
+                                        <input asp-for="Email" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Email" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+
+                                    <button class="btn btn-danger" type="submit">Ändra</button>
+                                </div>
+
                             </div>
                             <hr>
                             <div class="row">
@@ -62,12 +98,25 @@
                                 <div class="col-sm-9 text-secondary">
                                     @Model._userPageResponseModel.Country
                                 </div>
+
+                                <div id="@EditCountry" style="display: none">
+
+                                    <div class="form-group">
+                                        <label class="control-label">Land</label>
+                                        <input asp-for="Country" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Country" />
+                                        <span asp-validation-for="Country" class="text-danger"></span>
+                                    </div>
+
+                                    <button class="btn btn-danger" type="submit">Ändra</button>
+                                </div>
+
                             </div>
                             <hr>
                             <div class="row">
                                 <div class="col-sm-12">
                                 </div>
                             </div>
+                          </form>
                         </div>
                     </div>
                     <br />

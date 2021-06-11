@@ -31,8 +31,14 @@ namespace CSharpSnackisApp.Pages
         public object UserID { get; set; }
         [BindProperty]
         public string ProfileText { get; set; }
+        [BindProperty]
+        public string Username { get; set; }
         public string Message { get; set; }
         public string Token { get; set; }
+        [BindProperty]
+        public string Email { get; set; }
+        [BindProperty]
+        public string Country { get; set; }
 
         public UserViewModel(ILogger<UserViewModel> logger, SnackisAPI client)
         {
@@ -96,6 +102,81 @@ namespace CSharpSnackisApp.Pages
             else
             {
                 Message = "Kunde inte ändra profil texten, försök igen.";
+                return Page();
+            }
+        }
+
+        public async Task<IActionResult> OnPostEditUsername()
+        {
+
+            byte[] tokenByte;
+            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+            string token = Encoding.ASCII.GetString(tokenByte);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"username", $"{Username}"},
+                    {"email", $"{Email}"},
+                    {"country", $"{Country}" }
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync($"UserAuth/userProfileUsernameUpdate", content);
+
+            string request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                HttpContext.Session.Clear();
+
+                LoginResponseModel result = JsonConvert.DeserializeObject<LoginResponseModel>(request);
+                TokenChecker.UserName = Username;
+                TokenChecker.LoggedInUserID = result.UserID;
+                TokenChecker.ActiveRole = result.Role;
+
+                byte[] tokenInByte = Encoding.ASCII.GetBytes(result.Token);
+
+                HttpContext.Session.Set(TokenChecker.TokenName, tokenInByte);
+                HttpContext.Session.SetString("Role", result.Role);
+                HttpContext.Session.SetString("Id", result.UserID);
+
+                TokenChecker.UserName = Username;
+
+                return RedirectToPage("./UserView");
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                string result = JsonConvert.DeserializeObject<string>(request);
+
+                if (result == "Username in use")
+                {
+                    Message = "Användarnamnet används redan, välj ett annat.";
+                    return Page();
+                }
+                if (result == "E-mail in use")
+                {
+                    Message = "E-posten används redan, välj en annan.";
+                    return Page();
+                }
+                if (result == "Error, user not found")
+                {
+                    Message = "Det gick inte att registrera en användare just nu," +
+                              " vänligen försök igen senare eller kontakta" +
+                              " systemadministratören på MotorDuonForum@gmail.com så ordnar vi detta";
+                    return Page();
+                }
+
+                return Page();
+            }
+            else
+            {
+                Message = "Det gick inte att registrera en användare just nu," +
+                               " vänligen försök igen senare eller kontakta" +
+                               " systemadministratören på MotorDuonForum@gmail.com så ordnar vi detta";
                 return Page();
             }
         }
