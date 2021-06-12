@@ -32,9 +32,10 @@
                                 Meny
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/LoginView">Logga in</a>
+                                <a class="dropdown-item" href="/LoginView"><i class="fa fa-sign-in"></i> Logga in</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/RegisterView">Registrera dig</a>
+                                <a class="dropdown-item" href="/RegisterView"><i class="fa fa-check"></i> Registrera dig</a>
+                                
                             </div>
                         </li>
                     </ul>
@@ -51,9 +52,14 @@
                                     <b><i>@TokenChecker.UserName</i></b> - Meny
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/LogOutView">Logga ut</a>
+
+                                    <a class="dropdown-item" href="/admindashboard"><i class="fa fa-cogs"></i> Admin dashboard</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="/admindashboard">Admin dashboard</a>
+                                    <a class="dropdown-item" href="/UserView"><i class="fa fa-home"></i> Mina sidor</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="/LogOutView"><i class="fa fa-road"></i> Logga ut</a>
                                     <div class="dropdown-divider"></div>
                                 </div>
                             </li>
@@ -69,9 +75,11 @@
                                     <b><i>@TokenChecker.UserName</i></b> - Meny
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/LogOutView">Logga ut</a>
+                                    <a class="dropdown-item" href="/UserView"><i class="fa fa-home"></i> Mina sidor</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="/UserView">Mina sidor</a>
+                                    <a class="dropdown-item" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="/LogOutView"><i class="fa fa-road"></i> Logga ut</a>
                                     <div class="dropdown-divider"></div>
                                 </div>
                             </li>
@@ -92,7 +100,7 @@
             <div style="text-align: center">
                 &copy; 2021 - Motor-duon Forum -
                 <a asp-area="" asp-page="/Privacy" target="_blank">GDPR</a>
-                <a style="margin-left: 30px" class="btn btn-primary" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView">Chattar</a>
+                <a style="margin-left: 30px; border: none" class="btn" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView">Chattar <i class="fa fa-comment text-primary fa-2x"></i></a>
             </div>
         </div>
     </footer>

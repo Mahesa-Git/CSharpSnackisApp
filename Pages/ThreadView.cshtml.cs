@@ -74,6 +74,11 @@ namespace CSharpSnackisApp.Pages
             else
                 UserButtonVisibility = true;
 
+            if (TopicID is not null)
+                TokenChecker.TopicID = TopicID;
+            else
+                TopicID = TokenChecker.TopicID;
+
             if (TextID is not null)
             {
                 TopicID = TextID;
@@ -147,11 +152,10 @@ namespace CSharpSnackisApp.Pages
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    IActionResult resultPage = await OnGetAsync();
                     ModelState.Clear();
                     Title = null;
                     BodyText = null;
-                    return resultPage;
+                    return RedirectToPage("/ThreadView");
                 }
                 else
                 {
@@ -190,7 +194,7 @@ namespace CSharpSnackisApp.Pages
                         FileDelete.DeleteImage(image);
                     }
                 }
-                return RedirectToPage("/Index");
+                return RedirectToPage("/ThreadView");
             }
             else
             {

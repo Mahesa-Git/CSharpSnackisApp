@@ -14,7 +14,6 @@
                             <i class="fa fa-motorcycle text-navy mid-icon"></i>
                         </div>
                         <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
-                        <span></span>
                     </div>
                 </div>
                 <div class="ibox-content forum-container">
@@ -30,7 +29,7 @@
                     {
                         <div class="forum-title">
                             <div class="forum-title">
-                                <button class="btn btn-primary" onclick="showDiv('@DivId1')">Skapa ny post</button>
+                                <button class="btn" style="border: none" onclick="showDiv('@DivId1')">Skapa ny post <i class="fa fa-envelope fa-2x text-success"></i></button>
                             </div>
                             <div id="@DivId1" style="display: none">
                                 <form asp-page-handler="Post" enctype="multipart/form-data">
@@ -54,7 +53,7 @@
                                     </div>
                                     <fieldset class="form-group">
                                         <label for="Image">Bild</label>
-                                        <input asp-for="UploadFile" class="form-control" type="file" />
+                                        <input asp-for="UploadFile" style="border: none" class="form-control" type="file" />
                                         <br />
                                     </fieldset>
                                     <button class="btn btn-dark" type="submit">Skapa</button>
@@ -121,10 +120,10 @@
                                                             <input asp-for="PostID" class="form-control" value="@subject.postID" />
                                                             <span asp-validation-for="Title" class="text-danger"></span>
                                                         </div>
-                                                        <button class="btn btn-danger" type="submit">Radera</button>
+                                                        <button class="btn btn-outline-danger" type="submit">Radera <i class="fa fa-trash text-danger fa-2x"></i></button>
                                                     </form>
                                                 <div class="forum-title">
-                                                    <button class="btn btn-primary" onclick="showDiv('@DivId2')">Ändra</button>
+                                                    <button class="btn btn-outline-primary" onclick="showDiv('@DivId2')">Ändra  <i class="fa fa-magic text-primary fa-2x"></i></button>
                                                 </div>
                                                 <div id="@DivId2" style="display: none">
                                                     <form asp-page-handler="EditPost">
@@ -142,7 +141,7 @@
                                                             <textarea asp-for="BodyText" class="form-control"></textarea>
                                                             <span asp-validation-for="BodyText" class="text-danger"></span>
                                                         </div>
-                                                        <button class="btn btn-danger" type="submit">Ändra</button>
+                                                        <button class="btn btn-danger" type="submit">Ändra  </button>
                                                     </form>
                                                 </div>
                                             }
@@ -162,7 +161,7 @@
                                                     </div>
                                                     <div class="text-muted small text-center align-self-center">
                                                         <span class="d-none d-sm-inline-block">
-                                                            <button class="btn" style="border: none" type="submit"><i class="fa fa-thumbs-up text-black-50">@subject.postReactions.LikeCounter</i>Gilla</button>
+                                                            <button class="btn" style="border: none" type="submit">Gilla <i class="fa fa-thumbs-up text-black-50 fa-2x"> @subject.postReactions.LikeCounter</i></button>
                                                         </span>
                                                     </div>
                                                 </form>
@@ -180,7 +179,7 @@
                                                      </div>
                                                      <div class="text-muted small text-center align-self-center">
                                                          <span class="d-none d-sm-inline-block">
-                                                             <button class="btn" style="border: none" type="submit"><i class="fa fa-thumbs-up text-primary">@subject.postReactions.LikeCounter</i>Ta bort gilla</button>
+                                                             <button class="btn" style="border: none" type="submit">Ta bort gilla <i class="fa fa-thumbs-up text-primary fa-2x"> @subject.postReactions.LikeCounter</i></button>
                                                          </span>
                                                      </div>
                                                  </form>
@@ -241,10 +240,10 @@
                                                                             <input asp-for="Image" style="border: none" class="form-control" value="@reply.Image" />
                                                                             <span asp-validation-for="Image" class="text-danger"></span>
                                                                         </div>
-                                                                        <button class="btn btn-danger" type="submit">Radera</button>
+                                                                        <button class="btn btn-outline-danger" type="submit">Radera <i class="fa fa-trash text-danger fa-2x"></i></button>
                                                                     </form>
                                                                 <div class="forum-title">
-                                                                    <button class="btn btn-primary" onclick="showDiv('@DivId3')">Ändra</button>
+                                                                    <button class="btn btn-outline-primary" onclick="showDiv('@DivId3')">Ändra  <i class="fa fa-magic text-primary fa-2x"></i></button>
                                                                 </div>
                                                                 <div id="@DivId3" style="display: none">
 
@@ -312,7 +311,7 @@
                                     {
                                         var DivId4 = Guid.NewGuid().ToString();
                                         <div class="forum-title">
-                                            <button class="btn btn-primary" onclick="showDiv('@DivId4')">Svara</button>
+                                            <button class="btn" style="border:none" onclick="showDiv('@DivId4')">Svara <i class="fa fa-envelope fa-2x text-success"></i></button>
                                         </div>
                                         <div class="forum-title" id="@DivId4" style="display: none">
                                             <form asp-page-handler="Reply" enctype="multipart/form-data">

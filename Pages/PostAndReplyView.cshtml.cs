@@ -190,12 +190,10 @@ namespace CSharpSnackisApp.Pages
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-
-                IActionResult resultPage = await OnGetAsync();
                 ModelState.Clear();
                 Title = null;
                 BodyText = null;
-                return resultPage;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -240,12 +238,10 @@ namespace CSharpSnackisApp.Pages
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-
-                IActionResult resultPage = await OnGetAsync();
                 ModelState.Clear();
                 Title = null;
                 BodyText = null;
-                return resultPage;
+                return RedirectToPage("/PostAndReplyView");
 
             }
             else
@@ -308,8 +304,7 @@ namespace CSharpSnackisApp.Pages
                 if (Image is not null)
                     FileDelete.DeleteImage(Image);
 
-                IActionResult resultPage = await OnGetAsync();
-                return resultPage;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -344,8 +339,7 @@ namespace CSharpSnackisApp.Pages
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                IActionResult resultPage = await OnGetAsync();
-                return resultPage;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -377,8 +371,7 @@ namespace CSharpSnackisApp.Pages
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                IActionResult resultPage = await OnGetAsync();
-                return resultPage;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -455,8 +448,7 @@ namespace CSharpSnackisApp.Pages
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 TextID = null;
-                var result = await OnGetAsync();
-                return result;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -487,8 +479,7 @@ namespace CSharpSnackisApp.Pages
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 TextID = null;
-                var result = await OnGetAsync();
-                return result;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -519,8 +510,7 @@ namespace CSharpSnackisApp.Pages
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 TextID = null;
-                var result = await OnGetAsync();
-                return result;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -552,8 +542,7 @@ namespace CSharpSnackisApp.Pages
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 TextID = null;
-                var result = await OnGetAsync();
-                return result;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {

@@ -14,7 +14,6 @@
                             <i class="fa fa-motorcycle text-navy mid-icon"></i>
                         </div>
                         <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
-                        <span>Välj ett ämne</span>
                     </div>
                 </div>
                 <div class="ibox-content forum-container">
@@ -29,7 +28,7 @@
                         var divId6 = Guid.NewGuid().ToString();
                         <div class="forum-title">
                             <div class="forum-title">
-                                <button class="btn btn-primary" onclick="showDiv('@divId6')">Nytt Ämne</button>
+                                <button class="btn" style="border:none" onclick="showDiv('@divId6')">Skapa nytt ämne <i class="fa fa-envelope fa-2x text-success"></i></button>
                             </div>
                         </div>
                         <div id="@divId6" style="display: none">
@@ -74,10 +73,10 @@
                                                     <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
                                                     <span asp-validation-for="TopicID" class="text-danger"></span>
                                                 </div>
-                                                <button class="btn btn-danger" type="submit">Radera</button>
+                                                <button class="btn btn-outline-danger" type="submit">Radera <i class="fa fa-trash text-danger fa-2x"></i></button>
                                             </form>
                                             <div class="forum-title">
-                                                <button class="btn btn-primary" onclick="showDiv('@EditTopics')">Ändra</button>
+                                                <button class="btn btn-outline-primary" onclick="showDiv('@EditTopics')">Ändra  <i class="fa fa-magic text-primary fa-2x"></i></button>
                                             </div>
                                             <div id="@EditTopics" style="display: none">
                                                 <form asp-page-handler="EditTopic">

@@ -14,7 +14,6 @@
                             <i class="fa fa-motorcycle text-navy mid-icon"></i>
                         </div>
                         <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
-                        <span>Välj en tråd</span>
                     </div>
                 </div>
                 <div class="ibox-content forum-container">
@@ -29,7 +28,7 @@
                         var divId1 = Guid.NewGuid().ToString();
                         <div class="forum-title">
                             <div class="forum-title">
-                                <button class="btn btn-primary" onclick="showDiv('@divId1')">Ny tråd</button>
+                                <button class="btn" style="border:none" onclick="showDiv('@divId1')">Ny tråd <i class="fa fa-envelope fa-2x text-success"></i></button>
                             </div>
                             <div id="@divId1" style="display: none">
                                 <form method="post" enctype="multipart/form-data">
@@ -53,7 +52,7 @@
                                     </div>
                                     <fieldset class="form-group">
                                         <label for="Image">Bild</label>
-                                        <input asp-for="UploadFile" class="form-control" type="file" />
+                                        <input asp-for="UploadFile" style="border: none" class="form-control" type="file" />
                                         <br />
                                     </fieldset>
                                     <button class="btn btn-dark" type="submit">Skapa ny tråd</button>
@@ -89,7 +88,7 @@
                                         <input asp-for="ThreadID" class="form-control" value="@subject.threadID" />
                                         <span asp-validation-for="ThreadID" class="text-danger"></span>
                                     </div>
-                                    <button class="btn btn-danger" type="submit">Radera</button>
+                                    <button class="btn btn-outline-danger" type="submit">Radera <i class="fa fa-trash text-danger fa-2x"></i></button>
                                 </form>
                             }
                         }
