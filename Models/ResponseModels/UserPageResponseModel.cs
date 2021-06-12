@@ -9,6 +9,7 @@ namespace CSharpSnackisApp.Models.ResponseModels
 {
     public class UserPageResponseModel
     {
+        public string Id { get; set; }
         public string Country { get; set; }
         public string MailToken { get; set; }
         public DateTime CreateDate { get; set; }

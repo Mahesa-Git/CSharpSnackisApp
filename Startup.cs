@@ -1,9 +1,12 @@
+using CSharpSnackisApp.Models.Entities;
 using CSharpSnackisApp.Models.ResponseModels;
+using CSharpSnackisApp.Models.Toolbox;
 using CSharpSnackisApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,9 +34,8 @@ namespace CSharpSnackisApp
             services.AddTransient<PostReactionModel>();
             services.AddTransient<CategoryResponseModel>();
             services.AddHttpClient<SnackisAPI>();
-            
-            //services.AddSingleton<IBar, Bar>();
-            //services.AddScoped<IHello, Hello>();
+            services.AddTransient<User>();
+            services.AddTransient<SessionCheck>();
 
 
             services.AddRazorPages();

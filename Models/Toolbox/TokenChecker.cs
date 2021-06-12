@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Text;
 
 namespace CSharpSnackisApp.Models.Toolbox
 {
@@ -15,8 +14,9 @@ namespace CSharpSnackisApp.Models.Toolbox
         public static string UserName { get; set; }
         public static string ThreadID { get; set; }
         public static string TopicID { get; set; }
-        public static string CategoryID{ get; set; }
+        public static string CategoryID { get; set; }
         public static string SelectedChatID { get; set; }
 
+        
     }
 }
