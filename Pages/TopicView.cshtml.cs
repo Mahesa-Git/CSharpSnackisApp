@@ -4,7 +4,6 @@ using CSharpSnackisApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,10 +16,12 @@ namespace CSharpSnackisApp.Pages
 {
     public class TopicViewModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-        public List<TopicResponseModel> _topicResponseModels { get; set; }
+        private readonly SessionCheck _sessionCheck;
         private readonly SnackisAPI _client;
+        public string Token { get; set; }
+        public bool ButtonVisibility { get; set; }
         public string Message { get; set; }
+        public List<TopicResponseModel> _topicResponseModels { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public string categoryID { get; set; }
@@ -28,16 +29,12 @@ namespace CSharpSnackisApp.Pages
         public string TopicID { get; set; }
         [BindProperty]
         public string Title { get; set; }
-        public bool ButtonVisibility { get; set; }
-        [BindProperty]
-        public string newCategoryID { get; set; }
 
-        public TopicViewModel(ILogger<IndexModel> logger, SnackisAPI client)
+        public TopicViewModel(SnackisAPI client, SessionCheck sessionCheck)
         {
-            _logger = logger;
             _client = client;
+            _sessionCheck = sessionCheck;
         }
-
         public async Task<IActionResult> OnGetAsync()
         {
             try
@@ -75,51 +72,35 @@ namespace CSharpSnackisApp.Pages
             else
                 return RedirectToPage("/Error");
         }
-
-
         public async Task<IActionResult> OnPostCreateTopic()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+
+            var values = new Dictionary<string, string>()
             {
-                var values = new Dictionary<string, string>()
-                 {
-                    {"title", $"{Title}"},
-                    {"categoryId", $"{categoryID}"}
-                 };
+                 {"title", $"{Title}"},
+                 {"categoryId", $"{categoryID}"}
+            };
 
-                string payload = JsonConvert.SerializeObject(values);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _client.PostAsync($"/AdminPost/CreateTopic", content);
+            HttpResponseMessage response = await _client.PostAsync($"/AdminPost/CreateTopic", content);
 
-                var request = response.Content.ReadAsStringAsync().Result;
+            var request = response.Content.ReadAsStringAsync().Result;
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IActionResult resultPage = await OnGetAsync();
-                    return resultPage;
-                }
-                else
-                {
-                    Message = "Det gick inte att skapa ämnet";
-                    return Page();
-                }
-
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
             }
             else
             {
@@ -127,40 +108,33 @@ namespace CSharpSnackisApp.Pages
                 return Page();
             }
         }
-
         public async Task<IActionResult> OnPostDeleteTopic()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            HttpResponseMessage response = await _client.DeleteAsync($"/AdminPost/DeleteTopic/{TopicID}");
+            var request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                HttpResponseMessage response = await _client.DeleteAsync($"/AdminPost/DeleteTopic/{TopicID}");
-                var request = response.Content.ReadAsStringAsync().Result;
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                var ReplyAndPostImages = JsonConvert.DeserializeObject<List<string>>(request);
+                if (ReplyAndPostImages is not null)
                 {
-                    IActionResult resultPage = await OnGetAsync();
-                    return resultPage;
-                }
-                else
-                {
-                    Message = "Det gick inte att radera ämnet";
-                    return Page();
+                    foreach (var image in ReplyAndPostImages)
+                    {
+                        FileDelete.DeleteImage(image);
+                    }
                 }
 
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
             }
             else
             {
@@ -168,20 +142,21 @@ namespace CSharpSnackisApp.Pages
                 return Page();
             }
         }
-
         public async Task<IActionResult> OnPostEditTopic()
         {
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
-
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             var values = new Dictionary<string, string>()
-                 {
-                    {"title", $"{Title}"}
-                 };
+            {
+                {"title", $"{Title}"}
+            };
             string payload = JsonConvert.SerializeObject(values);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
@@ -189,25 +164,16 @@ namespace CSharpSnackisApp.Pages
 
             string request = response.Content.ReadAsStringAsync().Result;
 
-            if (!String.IsNullOrEmpty(token))
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IActionResult resultPage = await OnGetAsync();
-                    return resultPage;
-                }
-                else
-                {
-                    Message = "Kunde inte ändra ämnet";
-                    return Page();
-                }
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
             }
             else
             {
-                Message = "Det gick inte att ändra ämnet";
+                Message = "Kunde inte ändra ämnet";
                 return Page();
             }
         }
-
     }
 }

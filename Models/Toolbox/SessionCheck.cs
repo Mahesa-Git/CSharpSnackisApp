@@ -17,6 +17,7 @@ namespace CSharpSnackisApp.Models.Toolbox
                 byte[] tokenByte;
                 context.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
                 string token = Encoding.ASCII.GetString(tokenByte);
+
                 return token;
             }
             catch (Exception)

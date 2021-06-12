@@ -7,7 +7,6 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="wrapper wrapper-content animated fadeInRight">
-
                 <div class="ibox-content m-b-sm border-bottom">
                     <div class="p-xs">
                         <div class="pull-left m-r-md">
@@ -24,8 +23,6 @@
                         </div>
                         <h3>Kategorier</h3>
                     </div>
-
-
                     @if (Model.ButtonVisibility)
                     {
                             var createNewCategory = Guid.NewGuid().ToString();
@@ -58,7 +55,6 @@
                             </form>
                         </div>
                     }
-
                     @if (Model.Message is not null)
                     {
                         <p>@Model.Message</p>
@@ -87,8 +83,6 @@
                                                 </div>
                                                 <button class="btn btn-danger" type="submit">Radera</button>
                                             </form>
-
-
                                             <div class="forum-title">
                                                 <button class="btn btn-primary" onclick="showDiv('@EditCategory')">Ändra</button>
                                             </div>

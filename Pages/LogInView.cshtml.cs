@@ -59,12 +59,6 @@ namespace CSharpSnackisApp.Pages
                 Message = "Du är bannlyst. Skriv ett mail om du tycker det är orättvist. Shame! Shame!";
                 return Page();
             }
-            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            //{
-            //    MessageMail = "Du har inte bekräftat din E-post än, kika i din mail!";
-            //    StoredID = request;
-            //    return Page();
-            //}
             else
             {
                 LoginResponseModel result = JsonConvert.DeserializeObject<LoginResponseModel>(request);

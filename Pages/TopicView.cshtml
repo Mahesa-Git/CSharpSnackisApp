@@ -17,17 +17,13 @@
                         <span>Välj ett ämne</span>
                     </div>
                 </div>
-
-
                 <div class="ibox-content forum-container">
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
                             <small>Antal trådar: @Model._topicResponseModels.Count()</small>
-
                         </div>
                         <h3>Ämnen</h3>
                     </div>
-
                     @if (Model.ButtonVisibility)
                     {
                         var divId6 = Guid.NewGuid().ToString();
@@ -50,12 +46,10 @@
                                     <input asp-for="Title" class="form-control" autocomplete="off" />
                                     <span asp-validation-for="Title" class="text-danger"></span>
                                 </div>
-
                                 <button class="btn btn-dark" type="submit">Skapa nytt ämne</button>
                             </form>
                         </div>
                     }
-
                     @if (Model.Message is not null)
                     {
                         <p>@Model.Message</p>
@@ -75,8 +69,6 @@
                                         @if (Model.ButtonVisibility)
                                         {
                                             var EditTopics = Guid.NewGuid().ToString();
-
-
                                             <form asp-page-handler="DeleteTopic">
                                                 <div class="form-group" style="visibility: hidden">
                                                     <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
@@ -84,8 +76,6 @@
                                                 </div>
                                                 <button class="btn btn-danger" type="submit">Radera</button>
                                             </form>
-
-
                                             <div class="forum-title">
                                                 <button class="btn btn-primary" onclick="showDiv('@EditTopics')">Ändra</button>
                                             </div>

@@ -7,22 +7,25 @@
     var EditEmail = Guid.NewGuid().ToString();
     var EditCountry = Guid.NewGuid().ToString();
     var EditImage = Guid.NewGuid().ToString();
+    bool returnTokenValue = Models.Toolbox.TokenChecker.UserStatus;
 }
 
 
 <div class="container">
 
     <div class="main-body">
-        @if (Model.Message is not null)
-        {
-            <p class="text-danger">@Model.Message</p>
-        }
             <nav aria-label="breadcrumb" class="main-breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-page="Index">Till startsidan</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Profil</li>
                 </ol>
             </nav>
+        @if (Model.Message is not null)
+        {
+            <p class="text-danger">@Model.Message</p>
+        }
+        else
+        { 
             <div class="row gutters-sm">
                 <div class="col-md-4 mb-3">
                     <div class="card">
@@ -40,28 +43,40 @@
                                 <div class="mt-3">
                                     <h4>@Model._userPageResponseModel.Username</h4>
                                 </div>
-                                     <button class="btn btn-primary" onclick="showDiv('@EditImage');">Bildinställningar</button>
-                                     <div id="@EditImage" style="display: none">
-                                         <form asp-page-handler="EditImage" enctype="multipart/form-data">
-                                             <div class="form-group">
-                                                 <label class="control-label">Ändra bild</label>
-                                                 <input asp-for="UploadFile" class="form-control" style="border: none" type="file" />
-                                                 <span asp-validation-for="UploadFile" class="text-danger"></span>
-                                             </div>
-                                             <div class="form-group" style="visibility: hidden">
-                                                 <input asp-for="_user.Image" class="form-control" value="@Model._userPageResponseModel.Image" />
-                                                 <span asp-validation-for="_user.Image" class="text-danger"></span>
-                                             </div>
-                                             <button class="btn btn-warning" type="submit">Ändra bild</button>
-                                         </form>
-                                         <form asp-page-handler="DeleteImage">
-                                             <div class="form-group" style="visibility: hidden">
-                                                 <input asp-for="_user.Image" class="form-control" value="@Model._userPageResponseModel.Image" />
-                                                 <span asp-validation-for="_user.Image" class="text-danger"></span>
-                                             </div>
-                                             <button class="btn btn-danger" type="submit">Radera bild</button>
-                                         </form>
-                                     </div>
+                                @if (Model._userPageResponseModel.Id == Models.Toolbox.TokenChecker.LoggedInUserID || Models.Toolbox.TokenChecker.ActiveRole == "root" || Models.Toolbox.TokenChecker.ActiveRole == "admin")
+                                {
+                                    <button class="btn btn-primary" onclick="showDiv('@EditImage');">Bildinställningar</button>
+                                    <div id="@EditImage" style="display: none">
+                                        <form asp-page-handler="EditImage" enctype="multipart/form-data">
+                                            <div class="form-group">
+                                                <label class="control-label">Ändra bild</label>
+                                                <input asp-for="UploadFile" class="form-control" style="border: none" type="file" />
+                                                <span asp-validation-for="UploadFile" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group" style="visibility: hidden">
+                                                <input asp-for="_user.Image" class="form-control" value="@Model._userPageResponseModel.Image" />
+                                                <span asp-validation-for="_user.Image" class="text-danger"></span>
+                                            </div>
+                                            <button class="btn btn-warning" type="submit">Ändra bild</button>
+                                        </form>
+                                        <form asp-page-handler="DeleteImage">
+                                            <div class="form-group" style="visibility: hidden">
+                                                <input asp-for="_user.Image" class="form-control" value="@Model._userPageResponseModel.Image" />
+                                                <span asp-validation-for="_user.Image" class="text-danger"></span>
+                                            </div>
+                                            <button class="btn btn-danger" type="submit">Radera bild</button>
+                                        </form>
+                                    </div>
+                                }
+                                @if (returnTokenValue || Model.ButtonVisibility)
+                                {
+                                    <form asp-page-handler="ReportUser">
+                                        <div class="form-group" style="visibility: hidden">
+                                            <input asp-for="_user.Id" class="form-control" value="@Model.SearchedUserID" />
+                                            <span asp-validation-for="_user.Id" class="text-danger"></span>
+                                        </div>
+                                        <button class="btn" style="border: none" type="submit">Rapportera användare<i class="fa fa-bullhorn text-danger"></i></button>
+                                    </form>
                                 }
                             </div>
                         </div>
@@ -70,68 +85,71 @@
                 <div class="col-md-8">
                     <div class="card mb-3">                      
                         <div class="card-body">
+                            @if (Model._userPageResponseModel.Id == Models.Toolbox.TokenChecker.LoggedInUserID || Models.Toolbox.TokenChecker.ActiveRole == "root" || Models.Toolbox.TokenChecker.ActiveRole == "admin")
+                            {
                                 <button class="btn btn-info" onclick="showDiv('@EditUsername'); showDiv('@EditEmail'); showDiv('@EditCountry')">Ändra uppgifter</button>
-                            <form asp-page-handler="EditUsername">
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <div class="forum-title">
+                            }
+                                <form asp-page-handler="EditUsername">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="forum-title">
+                                            </div>
+                                            <h6 class="mb-0">Användarnamn</h6>
                                         </div>
-                                        <h6 class="mb-0">Användarnamn</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        @Model._userPageResponseModel.Username
-                                    </div>
-                                    <div id="@EditUsername" style="display: none">
-
-                                        <div class="form-group">
-                                            <input asp-for="_user.UserName" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Username" />
-                                            <span asp-validation-for="_user.UserName" class="text-danger"></span>
+                                        <div class="col-sm-9 text-secondary">
+                                            @Model._userPageResponseModel.Username
                                         </div>
+                                        <div id="@EditUsername" style="display: none">
 
-                                        <button class="btn btn-warning" type="submit">Ändra</button>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Email</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        @Model._userPageResponseModel.Email
-                                    </div>
-                                    <div id="@EditEmail" style="display: none">
-                                        <div class="form-group">
-                                            <input asp-for="_user.Email" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Email" />
-                                            <span asp-validation-for="_user.Email" class="text-danger"></span>
+                                            <div class="form-group">
+                                                <input asp-for="_user.UserName" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Username" />
+                                                <span asp-validation-for="_user.UserName" class="text-danger"></span>
+                                            </div>
+
+                                            <button class="btn btn-warning" type="submit">Ändra</button>
                                         </div>
-
-                                        <button class="btn btn-warning" type="submit">Ändra</button>
                                     </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <h6 class="mb-0">Land</h6>
-                                    </div>
-                                    <div class="col-sm-9 text-secondary">
-                                        @Model._userPageResponseModel.Country
-                                    </div>
-                                    <div id="@EditCountry" style="display: none">
-
-                                        <div class="form-group">
-                                            <input asp-for="_user.Country" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Country" />
-                                            <span asp-validation-for="_user.Country" class="text-danger"></span>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Email</h6>
                                         </div>
-                                        <button class="btn btn-warning" type="submit">Ändra</button>
+                                        <div class="col-sm-9 text-secondary">
+                                            @Model._userPageResponseModel.Email
+                                        </div>
+                                        <div id="@EditEmail" style="display: none">
+                                            <div class="form-group">
+                                                <input asp-for="_user.Email" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Email" />
+                                                <span asp-validation-for="_user.Email" class="text-danger"></span>
+                                            </div>
+
+                                            <button class="btn btn-warning" type="submit">Ändra</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-12">
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <h6 class="mb-0">Land</h6>
+                                        </div>
+                                        <div class="col-sm-9 text-secondary">
+                                            @Model._userPageResponseModel.Country
+                                        </div>
+                                        <div id="@EditCountry" style="display: none">
+
+                                            <div class="form-group">
+                                                <input asp-for="_user.Country" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Country" />
+                                                <span asp-validation-for="_user.Country" class="text-danger"></span>
+                                            </div>
+                                            <button class="btn btn-warning" type="submit">Ändra</button>
+                                        </div>
                                     </div>
-                                </div>
-                            </form>
-                        </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     <br />
                     <br />
@@ -146,8 +164,11 @@
                                 <div class="col-sm-9 text-secondary">
                                     @Model._userPageResponseModel.ProfileText
                                 </div>
-                                    <div class="forum-title">
+                                <div class="forum-title">
+                                    @if (Model._userPageResponseModel.Id == Models.Toolbox.TokenChecker.LoggedInUserID || Models.Toolbox.TokenChecker.ActiveRole == "root" || Models.Toolbox.TokenChecker.ActiveRole == "admin")
+                                    {
                                         <button class="btn btn-info" onclick="showDiv('@EditProfileText')">Ändra</button>
+                                    }
                                     </div>                               
                                 </div>
                                 <div id="@EditProfileText" style="display: none">
@@ -165,6 +186,7 @@
                     </div>
                 </div>
             </div>
+        }
     </div>
 </div>
 <div>

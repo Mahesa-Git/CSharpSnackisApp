@@ -21,7 +21,6 @@
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
                             <small>Antal poster i tråden: @Model._threadResponseModels.Select(x => x.posts).Count()</small>
-
                         </div>
                         <h3>Trådar</h3>
                     </div>
@@ -32,7 +31,6 @@
                             <div class="forum-title">
                                 <button class="btn btn-primary" onclick="showDiv('@divId1')">Ny tråd</button>
                             </div>
-
                             <div id="@divId1" style="display: none">
                                 <form method="post" enctype="multipart/form-data">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>

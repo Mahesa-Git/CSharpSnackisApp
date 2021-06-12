@@ -18,6 +18,8 @@ namespace CSharpSnackisApp.Pages
 {
     public class ThreadViewModel : PageModel
     {
+        private readonly SessionCheck _sessionCheck;
+        public string Token { get; set; }
         [BindProperty]
         public string Title { get; set; }
         [BindProperty]
@@ -40,12 +42,12 @@ namespace CSharpSnackisApp.Pages
         public IFormFile UploadFile { get; set; }
         public int PostCount { get; set; }
 
-        public ThreadViewModel(ILogger<IndexModel> logger, SnackisAPI client)
+        public ThreadViewModel(ILogger<IndexModel> logger, SnackisAPI client, SessionCheck sessionCheck)
         {
             _logger = logger;
             _client = client;
+            _sessionCheck = sessionCheck;
         }
-
         public async Task<IActionResult> OnGetAsync()
         {
             string userId = null;
@@ -76,7 +78,6 @@ namespace CSharpSnackisApp.Pages
             {
                 TopicID = TextID;
             }
-
             HttpResponseMessage response = await _client.GetAsync($"/Post/ReadThreadsInTopic/{TopicID}");
             var request = response.Content.ReadAsStringAsync().Result;
 
@@ -87,14 +88,13 @@ namespace CSharpSnackisApp.Pages
                 {
                     foreach (var model in _threadResponseModels)
                     {
-                        
+
                         if (userId == model.user.Id)
                         {
                             model.ButtonVisibility = true;
                         }
                     }
                 }
-                
                 return Page();
             }
             else
@@ -102,116 +102,95 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostAsync()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            string file = null;
+            string path = "./wwwroot/img/";
+            if (UploadFile != null)
             {
-                string file = null;
-                string path = "./wwwroot/img/";
-                if (UploadFile != null)
+                file = Guid.NewGuid().ToString() + UploadFile.FileName;
+                using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
                 {
-                    file = Guid.NewGuid().ToString() + UploadFile.FileName;
-                    using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
-                    {
-                        await UploadFile.CopyToAsync(fileStream);
-                    }
+                    await UploadFile.CopyToAsync(fileStream);
                 }
-                var values = new Dictionary<string, string>()
-                 {
-                    {"title", $"{Title}"},
-                    {"bodyText", $"{BodyText}"},
-                    {"topicID", $"{TopicID}"},
-                    {"image", $"{file}"}
-                 };
-                string payload = JsonConvert.SerializeObject(values);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            }
+            var values = new Dictionary<string, string>()
+            {
+                 {"title", $"{Title}"},
+                 {"bodyText", $"{BodyText}"},
+                 {"topicID", $"{TopicID}"},
+                 {"image", $"{file}"}
+            };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _client.PostAsync("Post/CreateThread", content);
+            HttpResponseMessage response = await _client.PostAsync("Post/CreateThread", content);
 
-                string request = response.Content.ReadAsStringAsync().Result;
+            string request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                values.Remove("topicID");
+                values.Add("threadID", $"{request}");
+                values.Add("isThreadStart", $"{true}");
+                payload = JsonConvert.SerializeObject(values);
+                content = new StringContent(payload, Encoding.UTF8, "application/json");
+                response = await _client.PostAsync("Post/CreatePost", content);
+                request = response.Content.ReadAsStringAsync().Result;
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    values.Remove("topicID");
-                    values.Add("threadID", $"{request}");
-                    values.Add("isThreadStart", $"{true}");
-                    payload = JsonConvert.SerializeObject(values);
-                    content = new StringContent(payload, Encoding.UTF8, "application/json");
-                    response = await _client.PostAsync("Post/CreatePost", content);
-                    request = response.Content.ReadAsStringAsync().Result;
-
-                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        IActionResult resultPage = await OnGetAsync();
-                        ModelState.Clear();
-                        Title = null;
-                        BodyText = null;
-                        return resultPage;
-                    }
-                    else
-                    {
-                        Message = "Något gick tvärfel";
-                        IActionResult resultPage = await OnGetAsync();
-                        return resultPage;
-                    }
+                    IActionResult resultPage = await OnGetAsync();
+                    ModelState.Clear();
+                    Title = null;
+                    BodyText = null;
+                    return resultPage;
                 }
                 else
                 {
-                    Message = "Ej behörig";
-                    return Page();
+                    Message = "Något gick tvärfel";
+                    IActionResult resultPage = await OnGetAsync();
+                    return resultPage;
                 }
             }
             else
             {
-                Message = "Du måste logga in först";
+                Message = "Ej behörig";
                 return Page();
             }
         }
         public async Task<IActionResult> OnPostDeleteThread()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeleteThread/{ThreadID}");
+            var request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeleteThread/{ThreadID}");
-                var request = response.Content.ReadAsStringAsync().Result;
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                var ReplyAndPostImages = JsonConvert.DeserializeObject<List<string>>(request);
+                if (ReplyAndPostImages is not null)
                 {
-                    return RedirectToPage("/Index");
+                    foreach (var image in ReplyAndPostImages)
+                    {
+                        FileDelete.DeleteImage(image);
+                    }
                 }
-                else
-                {
-                    Message = "Det gick inte att radera tråden";
-                    return Page();
-                }
-
+                return RedirectToPage("/Index");
             }
             else
             {

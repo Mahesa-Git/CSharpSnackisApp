@@ -4,11 +4,9 @@ using CSharpSnackisApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -18,27 +16,23 @@ namespace CSharpSnackisApp.Pages
 {
     public class IndexModel : PageModel
     {
-        
-        private readonly ILogger<IndexModel> _logger;
-        public List<CategoryResponseModel> _categoryResponseModel { get; set; }
         private readonly SnackisAPI _client;
+        private readonly SessionCheck _sessionCheck;
+        public string Token { get; set; }
         public string Message { get; set; }
-
+        public List<CategoryResponseModel> _categoryResponseModel { get; set; }
         [BindProperty]
         public string CategoryID { get; set; }
-
         public bool ButtonVisibility { get; set; }
-
         [BindProperty]
         public string Description { get; set; }
-
         [BindProperty]
         public string Title { get; set; }
 
-        public IndexModel(ILogger<IndexModel> logger, SnackisAPI client)
+        public IndexModel(SnackisAPI client, SessionCheck sessionCheck)
         {
-            _logger = logger;
             _client = client;
+            _sessionCheck = sessionCheck;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -46,8 +40,8 @@ namespace CSharpSnackisApp.Pages
             try
             {
                 string userRole = HttpContext.Session.GetString("Role");
-               
-                if(userRole == "root" || userRole == "admin")
+
+                if (userRole == "root" || userRole == "admin")
                 {
                     ButtonVisibility = true;
                 }
@@ -60,104 +54,80 @@ namespace CSharpSnackisApp.Pages
             {
                 ButtonVisibility = false;
             }
-            
+
             HttpResponseMessage response = await _client.GetAsync("Post/ReadCategory");
             var request = response.Content.ReadAsStringAsync().Result;
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 _categoryResponseModel = JsonConvert.DeserializeObject<List<CategoryResponseModel>>(request);
-            
+
                 return Page();
             }
             else
                 return RedirectToPage("/Error");
         }
-
         public async Task<IActionResult> OnPostDeleteCategory()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            HttpResponseMessage response = await _client.DeleteAsync($"/AdminPost/DeleteCategory/{CategoryID}");
+            var request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                HttpResponseMessage response = await _client.DeleteAsync($"/AdminPost/DeleteCategory/{CategoryID}");
-                var request = response.Content.ReadAsStringAsync().Result;
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                var ReplyAndPostImages = JsonConvert.DeserializeObject<List<string>>(request);
+                if (ReplyAndPostImages is not null)
                 {
-                    return RedirectToPage("/Index");
+                    foreach (var image in ReplyAndPostImages)
+                    {
+                        FileDelete.DeleteImage(image);
+                    }
                 }
-                else
-                {
-                    Message = "Det gick inte att radera kategorin";
-                    return Page();
-                }
-
+                return RedirectToPage("/Index");
             }
             else
             {
-                Message = "Det gick inte att radera Kategorin";
+                Message = "Det gick inte att radera kategorin";
                 return Page();
             }
         }
-
-
         public async Task<IActionResult> OnPostCreateCategory()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
-            {
-                var values = new Dictionary<string, string>()
+
+            var values = new Dictionary<string, string>()
                  {
                     {"title", $"{Title}"},
                     {"description", $"{Description}"}
                  };
 
-                string payload = JsonConvert.SerializeObject(values);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _client.PostAsync($"/AdminPost/CreateCategory", content);
+            HttpResponseMessage response = await _client.PostAsync($"/AdminPost/CreateCategory", content);
 
-                var request = response.Content.ReadAsStringAsync().Result;
+            var request = response.Content.ReadAsStringAsync().Result;
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IActionResult resultPage = await OnGetAsync();
-                    return resultPage;
-                }
-                else
-                {
-                    Message = "Det gick inte att skapa kategorin";
-                    return Page();
-                }
-
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
             }
             else
             {
@@ -165,21 +135,23 @@ namespace CSharpSnackisApp.Pages
                 return Page();
             }
         }
-
         public async Task<IActionResult> OnPostEditCategory()
         {
 
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             var values = new Dictionary<string, string>()
-                 {
-                    {"title", $"{Title}"},
-                    {"description", $"{Description}"}
-                 };
+            {
+                {"title", $"{Title}"},
+                {"description", $"{Description}"}
+            };
             string payload = JsonConvert.SerializeObject(values);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
@@ -187,22 +159,14 @@ namespace CSharpSnackisApp.Pages
 
             string request = response.Content.ReadAsStringAsync().Result;
 
-            if (!String.IsNullOrEmpty(token))
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IActionResult resultPage = await OnGetAsync();
-                    return resultPage;
-                }
-                else
-                {
-                    Message = "Kunde inte ändra ämnet";
-                    return Page();
-                }
+                IActionResult resultPage = await OnGetAsync();
+                return resultPage;
             }
             else
             {
-                Message = "Det gick inte att ändra ämnet";
+                Message = "Kunde inte ändra ämnet";
                 return Page();
             }
         }

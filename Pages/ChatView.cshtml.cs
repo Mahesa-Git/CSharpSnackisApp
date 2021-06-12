@@ -17,6 +17,7 @@ namespace CSharpSnackisApp.Pages
 {
     public class ChatViewModel : PageModel
     {
+        private readonly SessionCheck _sessionCheck;
         private readonly SnackisAPI _client;
         public List<User> Users { get; set; }
         public List<GroupChat> GroupChats { get; set; }
@@ -35,24 +36,20 @@ namespace CSharpSnackisApp.Pages
         [BindProperty]
         public List<string> RecipantIDs { get; set; }
 
-        public ChatViewModel(SnackisAPI client)
+        public ChatViewModel(SnackisAPI client, SessionCheck sessionCheck)
         {
             _client = client;
+            _sessionCheck = sessionCheck;
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            try
-            {
-                UserID = HttpContext.Session.GetString("Id");
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             if (!String.IsNullOrEmpty(Token))
@@ -68,6 +65,7 @@ namespace CSharpSnackisApp.Pages
                     request = response.Content.ReadAsStringAsync().Result;
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
+                        UserID = HttpContext.Session.GetString("Id");
                         GroupChats = JsonConvert.DeserializeObject<List<GroupChat>>(request);
                         SelectedGroupChat = GroupChats.Where(x => x.GroupChatID == GroupChatID).FirstOrDefault();
                         return Page();
@@ -88,117 +86,91 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostNewChat()
         {
-            try
-            {
-                UserID = HttpContext.Session.GetString("Id");
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(Token))
+            string payload = JsonConvert.SerializeObject(RecipantIDs);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PostAsync("/Chat/NewChat", content);
+
+            string request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                string payload = JsonConvert.SerializeObject(RecipantIDs);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
-
-                HttpResponseMessage response = await _client.PostAsync("/Chat/NewChat", content);
-
-                string request = response.Content.ReadAsStringAsync().Result;
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return RedirectToPage("/ChatView");
-                }
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                {
-                    IActionResult result = await OnGetAsync();
-                    Message = "Chatt existerar redan! Välj den i menyn.";
-                    return result;
-                }
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    Message = "Ej behörig att skapa chatt.";
-                    return Page();
-                }
-                else
-                {
-                    return Page();
-                }
+                return RedirectToPage("/ChatView");
+            }
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                IActionResult result = await OnGetAsync();
+                UserID = HttpContext.Session.GetString("Id");
+                Message = "Chatt existerar redan! Välj den i menyn.";
+                return result;
+            }
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                Message = "Ej behörig att skapa chatt.";
+                return Page();
             }
             else
             {
-                Message = "Du måste logga in först";
                 return Page();
             }
         }
-        public async Task<IActionResult> OnPostSelectedChat() //VALD CHATT, TAR IN CHATID, SÄTT PROPERTY I TOOLBOX KÖR EN ONGET. KOLLA TOKEN
+        public async Task<IActionResult> OnPostSelectedChat()
         {
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
-           
+            UserID = HttpContext.Session.GetString("Id");
             var result = await OnGetAsync();
             return result;
         }
-        public async Task<IActionResult> OnPostNewReplyInChat() //NY REPLY I VALD CHATT KOLLA TOKEN.
+        public async Task<IActionResult> OnPostNewReplyInChat()
         {
-            try
-            {
-                UserID = HttpContext.Session.GetString("Id");
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(Token))
-            {
-                var values = new Dictionary<string, string>()
+            var values = new Dictionary<string, string>()
                  {
                     {"groupChatID", $"{GroupChatID}"},
                     { "bodyText",$"{BodyText}"}
                  };
-                string payload = JsonConvert.SerializeObject(values);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _client.PostAsync("/Chat/NewReply", content);
+            HttpResponseMessage response = await _client.PostAsync("/Chat/NewReply", content);
 
-                string request = response.Content.ReadAsStringAsync().Result;
+            string request = response.Content.ReadAsStringAsync().Result;
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IActionResult result = await OnGetAsync();
-                    ModelState.Clear();
-                    BodyText = null;
-                    GroupChatID = GroupChatID;
-                    return result;
-                }
-                else
-                {
-                    return Page();
-                }
-
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                IActionResult result = await OnGetAsync();
+                UserID = HttpContext.Session.GetString("Id");
+                ModelState.Clear();
+                BodyText = null;
+                GroupChatID = GroupChatID;
+                return result;
             }
-            return Page();
+            else
+            {
+                return Page();
+            }
         }
     }
 }

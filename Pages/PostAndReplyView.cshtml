@@ -90,7 +90,7 @@
                                             </form>
                                         }
                                     <div class="media forum-item">
-                                        <a href="#" data-toggle="collapse" data-target=".forum-content">
+                                        <a asp-route-SearchedUserID="@subject.user.Id" asp-page="/UserView">
                                             @if (string.IsNullOrEmpty(subject.user.Image))
                                             {
                                                 <img src="~/img/NoPicture.jpg" class="mr-3 rounded-circle" width="50" alt="User" />
@@ -105,7 +105,7 @@
                                             <p class="text-secondary">
                                                 @subject.bodyText
                                             </p>
-                                            <p class="text-muted"><span class="text-primary">@subject.user.UserName</span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
+                                            <p class="text-muted"><span class="text-primary"><a class="text-primary" asp-route-SearchedUserID="@subject.user.Id" asp-page="/UserView">@subject.user.UserName</a></span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
                                             @if (!string.IsNullOrEmpty(subject.image))
                                             {
                                                 <img src="img/@subject.image" class="mr-3 img-thumbnail" alt="User" />
@@ -188,7 +188,6 @@
                                         }
                                     </div>
                                     </div>
-
                                     @if (subject.replies.Count > 0 || subject.replies is not null)
                                     {
                                         foreach (var reply in subject.replies)
@@ -207,7 +206,7 @@
                                                             </form>
                                                         }
                                                     <div class="media forum-item">
-                                                        <a href="#" data-toggle="collapse" data-target=".forum-content">
+                                                        <a asp-route-SearchedUserID="@reply.user.Id" asp-page="/UserView">
                                                             @if (string.IsNullOrEmpty(reply.user.Image))
                                                             {
                                                                 <img src="~/img/NoPicture.jpg" class="mr-3 rounded-circle" width="50" alt="User" />
@@ -221,7 +220,7 @@
                                                             <p class="text-secondary">
                                                                 @reply.bodyText
                                                             </p>
-                                                            <p class="text-muted"><span class="text-primary">@reply.user.UserName</span> svarade <span class="text-secondary font-weight-bold">@reply.createDate</span></p>
+                                                            <p class="text-muted"><span class="text-primary"><a class="text-primary" asp-route-SearchedUserID="@reply.user.Id" asp-page="/UserView">@reply.user.UserName</a></span> svarade <span class="text-secondary font-weight-bold">@reply.createDate</span></p>
                                                             @if (!string.IsNullOrEmpty(reply.Image))
                                                             {
                                                                 <img src="img/@reply.Image" class="mr-3 img-thumbnail" alt="User" />
@@ -233,13 +232,17 @@
                                                                     <i class="fa fa-eye text-danger">Rapporterad</i>
                                                                 }
                                                                 var DivId3 = Guid.NewGuid().ToString();
-                                                                <form asp-page-handler="DeleteReply">
-                                                                    <div class="form-group" style="visibility: hidden">
-                                                                        <input asp-for="ReplyID" class="form-control" value="@reply.replyID" />
-                                                                        <span asp-validation-for="ReplyID" class="text-danger"></span>
-                                                                    </div>
-                                                                    <button class="btn btn-danger" type="submit">Radera</button>
-                                                                </form>
+                                                                    <form asp-page-handler="DeleteReply">
+                                                                        <div class="form-group" style="visibility: hidden">
+                                                                            <input asp-for="ReplyID" class="form-control" value="@reply.replyID" />
+                                                                            <span asp-validation-for="ReplyID" class="text-danger"></span>
+                                                                        </div>
+                                                                        <div class="form-group" style="visibility: hidden">
+                                                                            <input asp-for="Image" style="border: none" class="form-control" value="@reply.Image" />
+                                                                            <span asp-validation-for="Image" class="text-danger"></span>
+                                                                        </div>
+                                                                        <button class="btn btn-danger" type="submit">Radera</button>
+                                                                    </form>
                                                                 <div class="forum-title">
                                                                     <button class="btn btn-primary" onclick="showDiv('@DivId3')">Ändra</button>
                                                                 </div>
@@ -325,7 +328,7 @@
                                                 </div>
                                                 <fieldset class="form-group">
                                                     <label for="Image">Bild</label>
-                                                    <input asp-for="UploadFile" class="form-control" type="file" />
+                                                    <input asp-for="UploadFile" style="border: none" class="form-control" type="file" />
                                                     <br />
                                                 </fieldset>
                                                 <button class="btn btn-dark" type="submit">Svara</button>
