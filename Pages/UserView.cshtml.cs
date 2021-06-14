@@ -114,7 +114,6 @@ namespace CSharpSnackisApp.Pages
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
             var values = new Dictionary<string, string>()
             {
-                {"id" , $"{_user.Id}" },
                 {"username", $"{_user.UserName}"},
                 {"email", $"{_user.Email}"},
                 {"country", $"{_user.Country}"}
