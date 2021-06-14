@@ -36,6 +36,7 @@ namespace CSharpSnackisApp
             services.AddTransient<CategoryResponseModel>();
             services.AddTransient<User>();
             services.AddTransient<SessionCheck>();
+            services.AddHttpContextAccessor();
 
             services.AddRazorPages();
             services.AddSession(options =>

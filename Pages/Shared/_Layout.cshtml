@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,9 +24,9 @@
 
             @using CSharpSnackisApp.Models.Toolbox
 
-            @{bool returnTokenValue = TokenChecker.UserStatus;}
+            @{bool returnTokenValue = HttpContextAccessor.HttpContext.Session.GetString("Role") is not null;}
 
-            @if (returnTokenValue == false)
+            @if (!returnTokenValue)
             {
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
@@ -41,15 +44,15 @@
                     </ul>
                 </div>
             }
-            @if (returnTokenValue == true)
+            @if (returnTokenValue)
             {
-                @if (TokenChecker.ActiveRole == "root")
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Role") == "root")
                 {
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <b><i>@TokenChecker.UserName</i></b> - Meny
+                                    <b><i>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</i></b> - Meny
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 
@@ -57,7 +60,7 @@
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="/UserView"><i class="fa fa-home"></i> Mina sidor</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
+                                    <a class="dropdown-item" asp-route-UserID="@HttpContextAccessor.HttpContext.Session.GetString("Id")" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="/LogOutView"><i class="fa fa-road"></i> Logga ut</a>
                                     <div class="dropdown-divider"></div>
@@ -72,12 +75,12 @@
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <b><i>@TokenChecker.UserName</i></b> - Meny
+                                    <b><i>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</i></b> - Meny
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="/UserView"><i class="fa fa-home"></i> Mina sidor</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
+                                    <a class="dropdown-item" asp-route-UserID="@HttpContextAccessor.HttpContext.Session.GetString("Id")" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="/LogOutView"><i class="fa fa-road"></i> Logga ut</a>
                                     <div class="dropdown-divider"></div>
@@ -100,7 +103,7 @@
             <div style="text-align: center">
                 &copy; 2021 - Motor-duon Forum -
                 <a asp-area="" asp-page="/Privacy" target="_blank">GDPR</a>
-                <a style="margin-left: 30px; border: none" class="btn" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView">Chattar <i class="fa fa-comment text-primary fa-2x"></i></a>
+                <a style="margin-left: 30px; border: none" class="btn" asp-route-UserID="@HttpContextAccessor.HttpContext.Session.GetString("Id")" asp-page="/ChatView">Chattar <i class="fa fa-comment text-primary fa-2x"></i></a>
             </div>
         </div>
     </footer>

@@ -51,9 +51,9 @@ namespace CSharpSnackisApp.Pages
                 }
 
                 if (categoryID is not null)
-                    TokenChecker.CategoryID = categoryID;
+                    HttpContext.Session.SetString("TextID", categoryID);
                 else
-                    categoryID = TokenChecker.CategoryID;
+                    categoryID = HttpContext.Session.GetString("TextID");
 
             }
             catch (Exception)

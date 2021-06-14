@@ -129,13 +129,10 @@ namespace CSharpSnackisApp.Pages
                 HttpContext.Session.Clear();
 
                 LoginResponseModel result = JsonConvert.DeserializeObject<LoginResponseModel>(request);
-                TokenChecker.UserName = _user.UserName;
-                TokenChecker.LoggedInUserID = result.UserID;
-                TokenChecker.ActiveRole = result.Role;
 
                 byte[] tokenInByte = Encoding.ASCII.GetBytes(result.Token);
 
-                HttpContext.Session.Set(TokenChecker.TokenName, tokenInByte);
+                HttpContext.Session.Set("_Token", tokenInByte);
                 HttpContext.Session.SetString("Role", result.Role);
                 HttpContext.Session.SetString("Id", result.UserID);
 

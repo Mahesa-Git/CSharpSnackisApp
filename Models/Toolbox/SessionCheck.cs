@@ -10,12 +10,16 @@ namespace CSharpSnackisApp.Models.Toolbox
 {
     public class SessionCheck : PageModel
     {
+        public SessionCheck()
+        {
+
+        }
         public string GetSession(HttpContext context)
         {
             try
             {
                 byte[] tokenByte;
-                context.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
+                context.Session.TryGetValue("_Token", out tokenByte);
                 string token = Encoding.ASCII.GetString(tokenByte);
 
                 return token;

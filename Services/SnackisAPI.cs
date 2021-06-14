@@ -14,7 +14,7 @@ namespace CSharpSnackisApp.Services
     {
         public SnackisAPI(HttpClient client) : base()
         {
-            BaseAddress = new Uri("https://localhost:44302");
+            BaseAddress = new Uri("https://csharpsnackisdb20210614110849.azurewebsites.net");
         }
         
     }

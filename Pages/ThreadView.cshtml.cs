@@ -75,9 +75,9 @@ namespace CSharpSnackisApp.Pages
                 UserButtonVisibility = true;
 
             if (TopicID is not null)
-                TokenChecker.TopicID = TopicID;
+                HttpContext.Session.SetString("TextID", TopicID);
             else
-                TopicID = TokenChecker.TopicID;
+                TopicID = HttpContext.Session.GetString("TextID");
 
             if (TextID is not null)
             {

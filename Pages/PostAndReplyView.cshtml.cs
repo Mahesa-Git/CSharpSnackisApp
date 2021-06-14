@@ -80,9 +80,9 @@ namespace CSharpSnackisApp.Pages
                 UserButtonVisibility = true;
 
             if (ThreadID is not null)
-                TokenChecker.ThreadID = ThreadID;
+                HttpContext.Session.SetString("TextID", ThreadID);
             else
-                ThreadID = TokenChecker.ThreadID;
+                ThreadID = HttpContext.Session.GetString("TextID");
 
             if (TextID is not null)
             {
