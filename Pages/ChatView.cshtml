@@ -110,21 +110,23 @@
                                             var side = reply.User.Id == Model.UserID ? "chat-right" : "chat-left";
                                             <li class="@side">
                                                 <div class="chat-avatar">
-                                                    @if (string.IsNullOrEmpty(reply.User.Image))
-                                                    {
-                                                        <img src="~/img/NoPicture.jpg">
-                                                    }
-                                                    else
-                                                    {
-                                                        <img src="img/@reply.User.Image">
-                                                        
-                                                    }
-                                                    <div class="chat-name">@reply.User.UserName</div>
+                                                    <a asp-route-SearchedUserID="@reply.User.Id" asp-page="/UserView">
+                                                        @if (string.IsNullOrEmpty(reply.User.Image))
+                                                        {
+                                                            <img src="~/img/NoPicture.jpg">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="img/@reply.User.Image">
+
+                                                        }
+                                                        </a>
+                                                        <div class="chat-name"><a asp-route-SearchedUserID="@reply.User.Id" asp-page="/UserView">@reply.User.UserName</a></div>
                                                 </div>
                                                 <div class="chat-text">
                                                     @reply.BodyText
                                                 </div>
-                                                <div class="chat-hour">@reply.CreateDate <span class="fa fa-check-circle"></span></div>
+                                                <div class="chat-hour">@reply.CreateDate.ToString("dd/MM/yyyy HH:mm") <span class="fa fa-check-circle"></span></div>
                                             </li>
                                          }
                                      }

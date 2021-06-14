@@ -143,7 +143,7 @@ else
                                     @if (element is Models.Entities.User)
                                     {
                                         ID = ((Models.Entities.User)element).Id;
-                                        value = "/UserView";
+                                        value = ((Models.Entities.User)element).Id;
                                         pageRoute = "/UserView";
                                         type = "User";
                                     }
@@ -191,7 +191,7 @@ else
                                     string banned = user.IsBanned == true ? "Bannad" : "Tillåten";
                                     <div class="d-flex flex-row">
                                         <div class="p-2">
-                                            @user.UserName : @banned
+                                            <a class="text-primary" asp-route-SearchedUserID="@user.Id" asp-page="/UserView">@user.UserName</a> : @banned
                                         </div>
                                     <div class="p-2">
                                         <form asp-page-handler="UnBanUser">

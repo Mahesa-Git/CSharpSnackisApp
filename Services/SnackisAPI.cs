@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CSharpSnackisApp.Models.Toolbox;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CSharpSnackisApp.Services
@@ -11,7 +14,8 @@ namespace CSharpSnackisApp.Services
     {
         public SnackisAPI(HttpClient client) : base()
         {
-            BaseAddress = new Uri("https://localhost:44302");
+            BaseAddress = new Uri("https://csharpsnackisdb20210614110849.azurewebsites.net");
         }
+        
     }
 }

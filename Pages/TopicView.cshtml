@@ -14,26 +14,21 @@
                             <i class="fa fa-motorcycle text-navy mid-icon"></i>
                         </div>
                         <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
-                        <span>Välj ett ämne</span>
                     </div>
                 </div>
-
-
                 <div class="ibox-content forum-container">
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
-                            <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
-
+                            <small>Antal trådar: @Model._topicResponseModels.Count()</small>
                         </div>
                         <h3>Ämnen</h3>
                     </div>
-
                     @if (Model.ButtonVisibility)
                     {
                         var divId6 = Guid.NewGuid().ToString();
                         <div class="forum-title">
                             <div class="forum-title">
-                                <button class="btn btn-primary" onclick="showDiv('@divId6')">Nytt Ämne</button>
+                                <button class="btn" style="border:none" onclick="showDiv('@divId6')">Skapa nytt ämne <i class="fa fa-envelope fa-2x text-success"></i></button>
                             </div>
                         </div>
                         <div id="@divId6" style="display: none">
@@ -50,12 +45,10 @@
                                     <input asp-for="Title" class="form-control" autocomplete="off" />
                                     <span asp-validation-for="Title" class="text-danger"></span>
                                 </div>
-
                                 <button class="btn btn-dark" type="submit">Skapa nytt ämne</button>
                             </form>
                         </div>
                     }
-
                     @if (Model.Message is not null)
                     {
                         <p>@Model.Message</p>
@@ -71,23 +64,19 @@
                                             <i class="fa fa-chevron-circle-right"></i>
                                         </div>
                                         <a asp-page="/ThreadView" asp-route-topicID="@subject.topicID" class="forum-item-title">@subject.title</a>
-                                        <div class="forum-sub-title">@subject.createDate</div>
+                                        <div class="forum-sub-title">@subject.createDate.ToString("dd/MM/yyyy HH:mm")</div>
                                         @if (Model.ButtonVisibility)
                                         {
                                             var EditTopics = Guid.NewGuid().ToString();
-
-
                                             <form asp-page-handler="DeleteTopic">
                                                 <div class="form-group" style="visibility: hidden">
                                                     <input asp-for="TopicID" class="form-control" value="@subject.topicID" />
                                                     <span asp-validation-for="TopicID" class="text-danger"></span>
                                                 </div>
-                                                <button class="btn btn-danger" type="submit">Radera</button>
+                                                <button class="btn btn-outline-danger" type="submit">Radera <i class="fa fa-trash text-danger fa-2x"></i></button>
                                             </form>
-
-
                                             <div class="forum-title">
-                                                <button class="btn btn-primary" onclick="showDiv('@EditTopics')">Ändra</button>
+                                                <button class="btn btn-outline-primary" onclick="showDiv('@EditTopics')">Ändra  <i class="fa fa-magic text-primary fa-2x"></i></button>
                                             </div>
                                             <div id="@EditTopics" style="display: none">
                                                 <form asp-page-handler="EditTopic">

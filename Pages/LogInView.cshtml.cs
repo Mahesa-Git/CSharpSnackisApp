@@ -56,33 +56,21 @@ namespace CSharpSnackisApp.Pages
             }
             if (request == "banned")
             {
-                Message = "Du är bannlyst. Skriv ett mail om du tycker det är orättvist.";
+                Message = "Du är bannlyst. Skriv ett mail om du tycker det är orättvist. Shame! Shame!";
                 return Page();
             }
-            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            //{
-            //    MessageMail = "Du har inte bekräftat din E-post än, kika i din mail!";
-            //    StoredID = request;
-            //    return Page();
-            //}
             else
             {
                 LoginResponseModel result = JsonConvert.DeserializeObject<LoginResponseModel>(request);
-                TokenChecker.UserName = Username;
-                TokenChecker.LoggedInUserID = result.UserID;
-                TokenChecker.ActiveRole = result.Role;
 
                 byte[] tokenInByte = Encoding.ASCII.GetBytes(result.Token);
 
-                HttpContext.Session.Set(TokenChecker.TokenName, tokenInByte);
+                HttpContext.Session.Set("_Token", tokenInByte);
                 HttpContext.Session.SetString("Role", result.Role);
                 HttpContext.Session.SetString("Id", result.UserID);
+                HttpContext.Session.SetString("UserName", Username);
 
             }
-            if (response.IsSuccessStatusCode)
-                TokenChecker.UserStatus = true;
-            else
-                TokenChecker.UserStatus = false;
 
             return RedirectToPage("/index");
         }

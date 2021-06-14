@@ -1,9 +1,12 @@
+using CSharpSnackisApp.Models.Entities;
 using CSharpSnackisApp.Models.ResponseModels;
+using CSharpSnackisApp.Models.Toolbox;
 using CSharpSnackisApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,19 +31,18 @@ namespace CSharpSnackisApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient<SnackisAPI>();
             services.AddTransient<PostReactionModel>();
             services.AddTransient<CategoryResponseModel>();
-            services.AddHttpClient<SnackisAPI>();
-            
-            //services.AddSingleton<IBar, Bar>();
-            //services.AddScoped<IHello, Hello>();
-
+            services.AddTransient<User>();
+            services.AddTransient<SessionCheck>();
+            services.AddHttpContextAccessor();
 
             services.AddRazorPages();
             services.AddSession(options =>
             {
                 options.Cookie.Name = ".CSharpSnackis.Session";
-                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.IdleTimeout = TimeSpan.FromMinutes(69);
                 options.Cookie.IsEssential = true;
             });
 

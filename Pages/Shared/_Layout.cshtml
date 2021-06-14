@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,9 +24,9 @@
 
             @using CSharpSnackisApp.Models.Toolbox
 
-            @{bool returnTokenValue = TokenChecker.UserStatus;}
+            @{bool returnTokenValue = HttpContextAccessor.HttpContext.Session.GetString("Role") is not null;}
 
-            @if (returnTokenValue == false)
+            @if (!returnTokenValue)
             {
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
@@ -32,40 +35,40 @@
                                 Meny
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/LoginView">Logga in</a>
+                                <a class="dropdown-item" href="/LoginView"><i class="fa fa-sign-in"></i> Logga in</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/RegisterView">Registrera dig</a>
+                                <a class="dropdown-item" href="/RegisterView"><i class="fa fa-check"></i> Registrera dig</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" target="_blank" href="https://csharpsnackisdb20210614110849.azurewebsites.net/APIThread/GetRandomThread"><i class="fa fa-file"></i> För utvecklare - API</a>                            
                             </div>
                         </li>
                     </ul>
-                    <form class="form-inline my-2 my-lg-0">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Sök bland trådar och inlägg" aria-label="Search">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sök</button>
-                    </form>
                 </div>
             }
-            @if (returnTokenValue == true)
+            @if (returnTokenValue)
             {
-                @if (TokenChecker.ActiveRole == "root")
+                @if (HttpContextAccessor.HttpContext.Session.GetString("Role") == "root")
                 {
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <b><i>@TokenChecker.UserName</i></b> - Meny
+                                    <b><i>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</i></b> - Meny
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/LogOutView">Logga ut</a>
+
+                                    <a class="dropdown-item" href="/admindashboard"><i class="fa fa-cogs"></i> Admin dashboard</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="/admindashboard">Admin dashboard</a>
+                                    <a class="dropdown-item" href="/UserView"><i class="fa fa-home"></i> Mina sidor</a>
                                     <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-route-UserID="@HttpContextAccessor.HttpContext.Session.GetString("Id")" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" target="_blank" href="https://csharpsnackisdb20210614110849.azurewebsites.net/APIThread/GetRandomThread"><i class="fa fa-file"></i> För utvecklare - API</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="/LogOutView"><i class="fa fa-road"></i> Logga ut</a>
                                 </div>
                             </li>
                         </ul>
-                        <form class="form-inline my-2 my-lg-0">
-                            <input class="form-control mr-sm-2" type="search" placeholder="Sök bland trådar och inlägg" aria-label="Search">
-                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sök</button>
-                        </form>
                     </div>
                 }
                 else
@@ -74,25 +77,24 @@
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <b><i>@TokenChecker.UserName</i></b> - Meny
+                                    <b><i>@HttpContextAccessor.HttpContext.Session.GetString("UserName")</i></b> - Meny
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/LogOutView">Logga ut</a>
+                                    <a class="dropdown-item" href="/UserView"><i class="fa fa-home"></i> Mina sidor</a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="/UserView">Mina sidor</a>
+                                    <a class="dropdown-item" asp-route-UserID="@HttpContextAccessor.HttpContext.Session.GetString("Id")" asp-page="/ChatView"><i class="fa fa-comment"></i> Chattar</a>
                                     <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" target="_blank" href="https://csharpsnackisdb20210614110849.azurewebsites.net/APIThread/GetRandomThread"><i class="fa fa-file"></i> För utvecklare - API</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="/LogOutView"><i class="fa fa-road"></i> Logga ut</a>
                                 </div>
                             </li>
                         </ul>
-                        <form class="form-inline my-2 my-lg-0">
-                            <input class="form-control mr-sm-2" type="search" placeholder="Sök bland trådar och inlägg" aria-label="Search">
-                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sök</button>
-                        </form>
                     </div>
                 }
             }
         </nav>
-        <div class="container">
+        <div class="container" id="wrapperDiv">
             <partial name="_CookieConsentPartial" />
             <main role="main">
                 @RenderBody()
@@ -101,9 +103,10 @@
     </div>
     <footer class="border-top footer text-muted container">
         <div class="container">
-            <div style="text-align: center">&copy; 2021 - Motor-duon Forum - 
-            <a asp-area="" asp-page="/Privacy" target="_blank">GDPR</a>
-            <a style="margin-left: 30px" class="btn btn-primary" asp-route-UserID="@Models.Toolbox.TokenChecker.LoggedInUserID" asp-page="/ChatView">Chattar</a>
+            <div style="text-align: center">
+                &copy; 2021 - Motor-duon Forum -
+                <a asp-area="" asp-page="/Privacy" target="_blank">GDPR</a>
+                <a style="margin-left: 30px; border: none" class="btn" asp-route-UserID="@HttpContextAccessor.HttpContext.Session.GetString("Id")" asp-page="/ChatView">Chattar <i class="fa fa-comment text-primary fa-2x"></i></a>
             </div>
         </div>
     </footer>

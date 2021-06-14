@@ -11,8 +11,10 @@ namespace CSharpSnackisApp.Models.ResponseModels
         public DateTime editDate { get; set; }
         public bool isReported { get; set; }
         public bool ButtonVisibility { get; set; }
+        public string Image { get; set; }
         public User user { get; set; }
         public Post post { get; set; }
         public GroupChat groupChat { get; set; }
+        public PostReactionModel postReactions { get; set; }
     }
 }

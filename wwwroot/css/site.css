@@ -483,8 +483,6 @@ body {
             background-image: -webkit-linear-gradient(right, #e9eff5, #ffffff);
             /* Chrome 10+, Saf5.1+, iOS 5+ */
             background-image: -moz-linear-gradient(right, #e9eff5, #ffffff);
-            /* FF3.6 */
-            background-image: -ms-linear-gradient(right, #e9eff5, #ffffff);
             /* IE10 */
             background-image: -o-linear-gradient(right, #e9eff5, #ffffff);
             /* Opera 11.10+ */
@@ -499,8 +497,6 @@ body {
             background-image: -webkit-linear-gradient(right, #f7f9fb, #ffffff);
             /* Chrome 10+, Saf5.1+, iOS 5+ */
             background-image: -moz-linear-gradient(right, #f7f9fb, #ffffff);
-            /* FF3.6 */
-            background-image: -ms-linear-gradient(right, #f7f9fb, #ffffff);
             /* IE10 */
             background-image: -o-linear-gradient(right, #f7f9fb, #ffffff);
             /* Opera 11.10+ */

@@ -14,14 +14,12 @@
                             <i class="fa fa-motorcycle text-navy mid-icon"></i>
                         </div>
                         <h2>Motor-duon Forum - Rätt plats för diskussioner om fordon i allmänhet</h2>
-                        <span>Välj en tråd</span>
                     </div>
                 </div>
                 <div class="ibox-content forum-container">
                     <div class="forum-title">
                         <div class="pull-right forum-desc">
-                            <small>Total posts: ett gäng (ska vara dynamiskt sen)</small>
-
+                            <small>Antal poster i tråden: @Model._threadResponseModels.Select(x => x.posts).Count()</small>
                         </div>
                         <h3>Trådar</h3>
                     </div>
@@ -30,11 +28,10 @@
                         var divId1 = Guid.NewGuid().ToString();
                         <div class="forum-title">
                             <div class="forum-title">
-                                <button class="btn btn-primary" onclick="showDiv('@divId1')">Ny tråd</button>
+                                <button class="btn" style="border:none" onclick="showDiv('@divId1')">Ny tråd <i class="fa fa-envelope fa-2x text-success"></i></button>
                             </div>
-
                             <div id="@divId1" style="display: none">
-                                <form method="post">
+                                <form method="post" enctype="multipart/form-data">
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                     <div class="form-group" style="visibility: hidden">
@@ -53,6 +50,11 @@
                                         <textarea asp-for="BodyText" class="form-control" autocomplete="off"></textarea>
                                         <span asp-validation-for="BodyText" class="text-danger"></span>
                                     </div>
+                                    <fieldset class="form-group">
+                                        <label for="Image">Bild</label>
+                                        <input asp-for="UploadFile" style="border: none" class="form-control" type="file" />
+                                        <br />
+                                    </fieldset>
                                     <button class="btn btn-dark" type="submit">Skapa ny tråd</button>
                                 </form>
                             </div>
@@ -72,9 +74,12 @@
                                         <div class="forum-icon">
                                             <i class="fa fa-chevron-circle-right"></i>
                                         </div>
-                                        <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title</a>
+                                        <div class="media-body">
+
+                                            <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title </a>skrivet av <b>@subject.user.UserName </b>@subject.createDate.ToString("dd/MM/yyyy HH:mm")
+                                        </div>
+                                        </div>
                                     </div>
-                                </div>
                             </div>
                             @if (subject.ButtonVisibility || Model.ButtonVisibility)
                             {
@@ -83,7 +88,7 @@
                                         <input asp-for="ThreadID" class="form-control" value="@subject.threadID" />
                                         <span asp-validation-for="ThreadID" class="text-danger"></span>
                                     </div>
-                                    <button class="btn btn-danger" type="submit">Radera</button>
+                                    <button class="btn btn-outline-danger" type="submit">Radera <i class="fa fa-trash text-danger fa-2x"></i></button>
                                 </form>
                             }
                         }

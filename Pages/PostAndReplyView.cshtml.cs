@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -18,8 +19,9 @@ namespace CSharpSnackisApp.Pages
     public class PostAndReplyViewModel : PageModel
     {
         private readonly SnackisAPI _client;
-
+        private readonly SessionCheck _sessionCheck;
         private readonly ILogger<IndexModel> _logger;
+        public string Token { get; set; }
         public List<PostResponseModel> _postResponseModel { get; set; }
         public List<ReplyResponseModel> _replyResponseModel { get; set; }
         public PostReactionModel _postReactionModel { get; set; }
@@ -35,7 +37,8 @@ namespace CSharpSnackisApp.Pages
         public string Title { get; set; }
         [BindProperty]
         public string BodyText { get; set; }
-
+        [BindProperty]
+        public string Image { get; set; }
         [BindProperty]
         public string PostID { get; set; }
         [BindProperty]
@@ -44,15 +47,18 @@ namespace CSharpSnackisApp.Pages
         public string TextID { get; set; }
         [BindProperty]
         public string AddOrRemoveReaction { get; set; }
+        [BindProperty]
+        public IFormFile UploadFile { get; set; }
 
-        public PostAndReplyViewModel(ILogger<IndexModel> logger, SnackisAPI client)
+        public PostAndReplyViewModel(ILogger<IndexModel> logger, SnackisAPI client, SessionCheck sessionCheck)
         {
             _logger = logger;
             _client = client;
+            _sessionCheck = sessionCheck;
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            
+
             string userId = null;
             try
             {
@@ -74,9 +80,9 @@ namespace CSharpSnackisApp.Pages
                 UserButtonVisibility = true;
 
             if (ThreadID is not null)
-                TokenChecker.ThreadID = ThreadID;
+                HttpContext.Session.SetString("TextID", ThreadID);
             else
-                ThreadID = TokenChecker.ThreadID;
+                ThreadID = HttpContext.Session.GetString("TextID");
 
             if (TextID is not null)
             {
@@ -101,6 +107,7 @@ namespace CSharpSnackisApp.Pages
                 {
                     HttpResponseMessage reactionResponse = await _client.GetAsync($"Post/ReadPostReaction/{post.postID}");
                     var reactionRequest = reactionResponse.Content.ReadAsStringAsync().Result;
+
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         post.postReactions = JsonConvert.DeserializeObject<PostReactionModel>(reactionRequest);
@@ -113,7 +120,24 @@ namespace CSharpSnackisApp.Pages
 
                     response = await _client.GetAsync($"/Post/ReadRepliesToPost/{post.postID}");
                     request = response.Content.ReadAsStringAsync().Result;
+
                     _replyResponseModel = JsonConvert.DeserializeObject<List<ReplyResponseModel>>(request);
+
+                    foreach (var reply in _replyResponseModel)
+                    {
+                        HttpResponseMessage reactionReplyResponse = await _client.GetAsync($"Post/ReadReplyReaction/{reply.replyID}");
+                        var reactionReplyRequest = reactionReplyResponse.Content.ReadAsStringAsync().Result;
+
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            reply.postReactions = JsonConvert.DeserializeObject<PostReactionModel>(reactionReplyRequest);
+                        }
+                        else
+                        {
+                            Message = "Detta gick åt pipan";
+                            return Page();
+                        }
+                    }
                     if (userId is not null)
                     {
                         foreach (var model in _replyResponseModel)
@@ -131,144 +155,129 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostPost()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            string file = null;
+            string path = "./wwwroot/img/";
+            if (UploadFile != null)
             {
-                var values = new Dictionary<string, string>()
+                file = Guid.NewGuid().ToString() + UploadFile.FileName;
+                using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
+                {
+                    await UploadFile.CopyToAsync(fileStream);
+                }
+            }
+            var values = new Dictionary<string, string>()
                  {
                     {"title", $"{Title}"},
                     {"bodyText", $"{BodyText}"},
-                    {"threadID", $"{ThreadID}"}
+                    {"threadID", $"{ThreadID}"},
+                    {"image", $"{file}"}
                  };
-                string payload = JsonConvert.SerializeObject(values);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _client.PostAsync("Post/CreatePost", content);
+            HttpResponseMessage response = await _client.PostAsync("Post/CreatePost", content);
 
-                string request = response.Content.ReadAsStringAsync().Result;
+            string request = response.Content.ReadAsStringAsync().Result;
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    
-                    IActionResult resultPage = await OnGetAsync();
-                    ModelState.Clear();
-                    Title = null;
-                    BodyText = null;
-                    return resultPage;
-                }
-                else
-                {
-                    Message = "Ej behörig";
-                    return Page();
-                }
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ModelState.Clear();
+                Title = null;
+                BodyText = null;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
-                Message = "Du måste logga in först";
+                Message = "Ej behörig";
                 return Page();
             }
         }
         public async Task<IActionResult> OnPostReply()
         {
 
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            string file = null;
+            string path = "./wwwroot/img/";
+            if (UploadFile != null)
             {
-                var values = new Dictionary<string, string>()
+                file = Guid.NewGuid().ToString() + UploadFile.FileName;
+                using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
+                {
+                    await UploadFile.CopyToAsync(fileStream);
+                }
+            }
+            var values = new Dictionary<string, string>()
                  {
                     {"bodyText", $"{BodyText}"},
-                    {"postID", $"{PostID}"}
+                    {"postID", $"{PostID}"},
+                    {"image", $"{file}"}
                  };
-                string payload = JsonConvert.SerializeObject(values);
-                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _client.PostAsync("Post/CreateReply", content);
+            HttpResponseMessage response = await _client.PostAsync("Post/CreateReply", content);
 
-                string request = response.Content.ReadAsStringAsync().Result;
+            string request = response.Content.ReadAsStringAsync().Result;
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                   
-                    IActionResult resultPage = await OnGetAsync();
-                    ModelState.Clear();
-                    Title = null;
-                    BodyText = null;
-                    return resultPage;
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ModelState.Clear();
+                Title = null;
+                BodyText = null;
+                return RedirectToPage("/PostAndReplyView");
 
-                }
-                else
-                {
-                    Message = "Ej behörig";
-                    return Page();
-                }
             }
             else
             {
-                Message = "Du måste logga in först";
+                Message = "Ej behörig";
                 return Page();
             }
-
         }
         public async Task<IActionResult> OnPostDeletePost()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeletePost/{PostID}");
+            var request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeletePost/{PostID}");
-                var request = response.Content.ReadAsStringAsync().Result;
+                if (Image is not null)
+                    FileDelete.DeleteImage(Image);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                var ReplyImages = JsonConvert.DeserializeObject<List<string>>(request);
+                if (ReplyImages is not null)
                 {
-                    return RedirectToPage("/index");
+                    foreach (var image in ReplyImages)
+                    {
+                        FileDelete.DeleteImage(image);
+                    }
                 }
-                else
-                {
-                    Message = "Det gick inte att radera posten";
-                    return Page();
-                }
-
+                return RedirectToPage("/index");
             }
             else
             {
@@ -278,52 +287,43 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostDeleteReply()
         {
-            string token = null;
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            if (!String.IsNullOrEmpty(token))
+            HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeleteReply/{ReplyID}");
+            var request = response.Content.ReadAsStringAsync().Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                HttpResponseMessage response = await _client.DeleteAsync($"/Post/DeleteReply/{ReplyID}");
-                var request = response.Content.ReadAsStringAsync().Result;
+                if (Image is not null)
+                    FileDelete.DeleteImage(Image);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    IActionResult resultPage = await OnGetAsync();
-                    return resultPage;
-                }
-                else
-                {
-                    Message = "Det gick inte att radera posten";
-                    return Page();
-                }
-
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
                 Message = "Det gick inte att radera posten";
                 return Page();
             }
+
         }
         public async Task<IActionResult> OnPostEditPost()
         {
 
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             var values = new Dictionary<string, string>()
                  {
@@ -339,8 +339,7 @@ namespace CSharpSnackisApp.Pages
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                IActionResult resultPage = await OnGetAsync();
-                return resultPage;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -350,11 +349,14 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostEditReply()
         {
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             var values = new Dictionary<string, string>()
                  {
@@ -369,8 +371,7 @@ namespace CSharpSnackisApp.Pages
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                IActionResult resultPage = await OnGetAsync();
-                return resultPage;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -380,11 +381,14 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostReportPost()
         {
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
             HttpResponseMessage response = await _client.GetAsync($"Post/ReportPost/{PostID}");
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -400,11 +404,14 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostReportReply()
         {
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
             HttpResponseMessage response = await _client.GetAsync($"Post/ReportReply/{ReplyID}");
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -420,11 +427,14 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostAddReaction()
         {
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             var values = new Dictionary<string, string>()
                  {
@@ -438,8 +448,7 @@ namespace CSharpSnackisApp.Pages
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 TextID = null;
-                var result = await OnGetAsync();
-                return result;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -449,12 +458,14 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostRemoveReaction()
         {
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
 
-            byte[] tokenByte;
-            HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-            string token = Encoding.ASCII.GetString(tokenByte);
-
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{token}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             var values = new Dictionary<string, string>()
                  {
@@ -468,8 +479,70 @@ namespace CSharpSnackisApp.Pages
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 TextID = null;
-                var result = await OnGetAsync();
-                return result;
+                return RedirectToPage("/PostAndReplyView");
+            }
+            else
+            {
+                Message = "Kunde inte avregistrera reaktion.";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostAddReplyReaction()
+        {
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"textID", $"{TextID}"},
+                    {"addOrRemove", $"{AddOrRemoveReaction}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync("Post/ReactToReply", content);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                TextID = null;
+                return RedirectToPage("/PostAndReplyView");
+            }
+            else
+            {
+                Message = "Kunde inte registrera reaktion.";
+                return Page();
+            }
+        }
+        public async Task<IActionResult> OnPostRemoveReplyReaction()
+        {
+
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
+            {
+                Message = "Du måste logga in först";
+                return Page();
+            }
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
+
+            var values = new Dictionary<string, string>()
+                 {
+                    {"textID", $"{TextID}"},
+                    {"addOrRemove", $"{AddOrRemoveReaction}"}
+                 };
+            string payload = JsonConvert.SerializeObject(values);
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PutAsync("Post/ReactToReply", content);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                TextID = null;
+                return RedirectToPage("/PostAndReplyView");
             }
             else
             {
@@ -479,3 +552,4 @@ namespace CSharpSnackisApp.Pages
         }
     }
 }
+

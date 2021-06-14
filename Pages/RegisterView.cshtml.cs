@@ -41,22 +41,14 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostAsync()
         {
+
+            string file = null;
+            string path = "./wwwroot/img/";
             if (UploadFile != null)
             {
-                var file = "./wwwroot/img/" + Guid.NewGuid().ToString() + UploadFile.FileName;
-                var fileNameDoubleCheck = Directory.GetFiles("./wwwroot/img/");
-                //foreach (var item in fileNameDoubleCheck)
-                //{
-                //    if (item == file)
-                //    {
-                //        Message = "Välj en annan bild";
-                //        return Page();
-                //    }
-                //}
-
-                using (var fileStream = new FileStream(file, FileMode.Create))
+                file = Guid.NewGuid().ToString() + UploadFile.FileName;
+                using (var fileStream = new FileStream($"{path}{file}", FileMode.Create))
                 {
-                    User.Image = UploadFile.FileName;
                     await UploadFile.CopyToAsync(fileStream);
                 }
             }
@@ -66,7 +58,7 @@ namespace CSharpSnackisApp.Pages
                     {"email", $"{User.Email}"},
                     {"password", $"{User.Password}"},
                     {"country", $"{User.Country}"},
-                    {"image", $"{User.Image}" }
+                    {"image", $"{file}" }
                  };
             string payload = JsonConvert.SerializeObject(values);
             var content = new StringContent(payload, Encoding.UTF8, "application/json");

@@ -15,6 +15,7 @@ namespace CSharpSnackisApp.Pages
 {
     public class AdminDashboardModel : PageModel
     {
+        private readonly SessionCheck _sessionCheck;
         private readonly SnackisAPI _client;
         [BindProperty]
         public string Token { get; set; }
@@ -31,19 +32,15 @@ namespace CSharpSnackisApp.Pages
         public int[] Statistics { get; set; }
         public string Message { get; set; }
         public List<User> Users { get; set; }
-        public AdminDashboardModel(SnackisAPI client)
+        public AdminDashboardModel(SnackisAPI client, SessionCheck sessionCheck)
         {
             _client = client;
+            _sessionCheck = sessionCheck;
         }
         public async Task<IActionResult> OnGetAsync()
         {
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
@@ -122,17 +119,13 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostBanUser()
         {
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
             HttpResponseMessage response = await _client.GetAsync($"AdminAuth/BanUser/{UserID}");
             var request = response.Content.ReadAsStringAsync().Result;
@@ -150,17 +143,13 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostUnbanUser()
         {
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
             HttpResponseMessage response = await _client.GetAsync($"AdminAuth/UnbanUser/{UserID}");
             var request = response.Content.ReadAsStringAsync().Result;
@@ -178,17 +167,13 @@ namespace CSharpSnackisApp.Pages
         }
         public async Task<IActionResult> OnPostReviewDone()
         {
-            try
-            {
-                byte[] tokenByte;
-                HttpContext.Session.TryGetValue(TokenChecker.TokenName, out tokenByte);
-                Token = Encoding.ASCII.GetString(tokenByte);
-            }
-            catch (Exception)
+            Token = _sessionCheck.GetSession(HttpContext);
+            if (Token == null)
             {
                 Message = "Du måste logga in först";
                 return Page();
             }
+
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
             var values = new Dictionary<string, string>()
