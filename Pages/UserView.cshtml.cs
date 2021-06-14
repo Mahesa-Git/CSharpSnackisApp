@@ -114,6 +114,7 @@ namespace CSharpSnackisApp.Pages
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
             var values = new Dictionary<string, string>()
             {
+                {"id" , $"{_user.Id}" },
                 {"username", $"{_user.UserName}"},
                 {"email", $"{_user.Email}"},
                 {"country", $"{_user.Country}"}
@@ -135,6 +136,7 @@ namespace CSharpSnackisApp.Pages
                 HttpContext.Session.Set("_Token", tokenInByte);
                 HttpContext.Session.SetString("Role", result.Role);
                 HttpContext.Session.SetString("Id", result.UserID);
+                HttpContext.Session.SetString("UserName", _user.UserName);
 
                 return RedirectToPage("./UserView");
             }
@@ -226,7 +228,7 @@ namespace CSharpSnackisApp.Pages
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            HttpResponseMessage response = await _client.GetAsync($"UserAuth/userImageDelete{_user.Image}");
+            HttpResponseMessage response = await _client.GetAsync($"UserAuth/userImageDelete/{_user.Image}");
             string request = response.Content.ReadAsStringAsync().Result;
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)

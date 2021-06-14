@@ -48,7 +48,10 @@
                                 @if (Model._userPageResponseModel.Id == HttpContextAccessor.HttpContext.Session.GetString("Id") || HttpContextAccessor.HttpContext.Session.GetString("Role") == "root" || HttpContextAccessor.HttpContext.Session.GetString("Role") == "admin")
                                 {
                                     <button class="btn btn-primary" onclick="showDiv('@EditImage');">Bildinställningar</button>
+
                                     <div id="@EditImage" style="display: none">
+                                    @if(Model._userPageResponseModel.Id == HttpContextAccessor.HttpContext.Session.GetString("Id"))
+                                    {
                                         <form asp-page-handler="EditImage" enctype="multipart/form-data">
                                             <div class="form-group">
                                                 <label class="control-label">Ändra bild</label>
@@ -61,6 +64,7 @@
                                             </div>
                                             <button class="btn btn-warning" type="submit">Ändra bild</button>
                                         </form>
+                                    }
                                         <form asp-page-handler="DeleteImage">
                                             <div class="form-group" style="visibility: hidden">
                                                 <input asp-for="_user.Image" class="form-control" value="@Model._userPageResponseModel.Image" />
