@@ -106,7 +106,7 @@
                                                 <p class="text-secondary">
                                                     @subject.bodyText
                                                 </p>
-                                                <p class="text-muted"><span class="text-primary"><a class="text-primary" asp-route-SearchedUserID="@subject.user.Id" asp-page="/UserView">@subject.user.UserName</a></span> postade <span class="text-secondary font-weight-bold">@subject.createDate</span></p>
+                                                <p class="text-muted"><span class="text-primary"><a class="text-primary" asp-route-SearchedUserID="@subject.user.Id" asp-page="/UserView">@subject.user.UserName</a></span> postade <span class="text-secondary font-weight-bold">@subject.createDate.ToString("dd/MM/yyyy HH:mm")</span></p>
                                                 @if (!string.IsNullOrEmpty(subject.image))
                                                 {
                                                     <img src="img/@subject.image" class="mr-3 img-thumbnail" alt="User" />
@@ -221,7 +221,7 @@
                                                                 <p class="text-secondary">
                                                                     @reply.bodyText
                                                                 </p>
-                                                                <p class="text-muted"><span class="text-primary"><a class="text-primary" asp-route-SearchedUserID="@reply.user.Id" asp-page="/UserView">@reply.user.UserName</a></span> svarade <span class="text-secondary font-weight-bold">@reply.createDate</span></p>
+                                                                <p class="text-muted"><span class="text-primary"><a class="text-primary" asp-route-SearchedUserID="@reply.user.Id" asp-page="/UserView">@reply.user.UserName</a></span> svarade <span class="text-secondary font-weight-bold">@reply.createDate.ToString("dd/MM/yyyy HH:mm")</span></p>
                                                                 @if (!string.IsNullOrEmpty(reply.Image))
                                                                 {
                                                                     <img src="img/@reply.Image" class="mr-3 img-thumbnail" alt="User" />

@@ -76,7 +76,7 @@
                                         </div>
                                         <div class="media-body">
 
-                                            <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title </a>skrivet av <b>@subject.user.UserName </b>@subject.createDate
+                                            <a asp-page="/PostAndReplyView" asp-route-ThreadID="@subject.threadID" class="forum-item-title">@subject.title </a>skrivet av <b>@subject.user.UserName </b>@subject.createDate.ToString("dd/MM/yyyy HH:mm")
                                         </div>
                                         </div>
                                     </div>
