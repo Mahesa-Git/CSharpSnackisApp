@@ -74,7 +74,7 @@
                                         </form>
                                     </div>
                                 }
-                                @if (returnTokenValue || Model.ButtonVisibility)
+                                @if ((returnTokenValue && HttpContextAccessor.HttpContext.Session.GetString("Id") !=  Model._userPageResponseModel.Id) || Model.ButtonVisibility)
                                 {
                                     <form asp-page-handler="ReportUser">
                                         <div class="form-group" style="visibility: hidden">
@@ -146,6 +146,10 @@
                                             <input asp-for="_user.Country" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Country" />
                                             <span asp-validation-for="_user.Country" class="text-danger"></span>
                                         </div>
+                                        <div class="form-group" style="visibility:hidden">
+                                            <input asp-for="_user.Id" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Id" />
+                                            <span asp-validation-for="_user.Id" class="text-danger"></span>
+                                        </div>
                                         <button class="btn btn-warning" type="submit">Ändra</button>
                                     </div>
                                 </div>
@@ -183,6 +187,10 @@
                                         <label class="control-label">Titel</label>
                                         <input asp-for="_user.ProfileText" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.ProfileText" />
                                         <span asp-validation-for="_user.ProfileText" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group" style="visibility:hidden">
+                                        <input asp-for="_user.Id" class="form-control" autocomplete="off" value="@Model._userPageResponseModel.Id" />
+                                        <span asp-validation-for="_user.Id" class="text-danger"></span>
                                     </div>
                                     <button class="btn btn-warning" type="submit">Ändra</button>
                                 </form>

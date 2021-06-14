@@ -80,7 +80,7 @@
                             <div class="forum-item active">
                                 <div class="card mb-2">
                                     <div class="card-body p-2 p-sm-3">
-                                        @if (returnTokenValue || Model.ButtonVisibility)
+                                        @if ((returnTokenValue && HttpContextAccessor.HttpContext.Session.GetString("Id") != subject.user.Id) || Model.ButtonVisibility)
                                         {
                                             <form asp-page-handler="ReportPost">
                                                 <div class="form-group" style="visibility: hidden">
@@ -196,7 +196,7 @@
                                             <div style="padding-left: 150px">
                                                 <div class="card mb-2, text-white">
                                                     <div class="card-body p-2 p-sm-3">
-                                                        @if (returnTokenValue || Model.ButtonVisibility)
+                                                        @if ((returnTokenValue && HttpContextAccessor.HttpContext.Session.GetString("Id") != reply.user.Id) || Model.ButtonVisibility)
                                                         {
                                                             <form asp-page-handler="ReportReply">
                                                                 <div class="form-group" style="visibility: hidden">

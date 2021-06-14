@@ -5,7 +5,6 @@ using CSharpSnackisApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -84,6 +83,7 @@ namespace CSharpSnackisApp.Pages
 
             var values = new Dictionary<string, string>()
             {
+                {"id", $"{_user.Id}"},
                 {"profileText", $"{_user.ProfileText}"}
             };
 
@@ -114,6 +114,7 @@ namespace CSharpSnackisApp.Pages
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
             var values = new Dictionary<string, string>()
             {
+                {"id", $"{_user.Id}"},
                 {"username", $"{_user.UserName}"},
                 {"email", $"{_user.Email}"},
                 {"country", $"{_user.Country}"}
@@ -126,18 +127,22 @@ namespace CSharpSnackisApp.Pages
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                HttpContext.Session.Clear();
+                if (request != "admin changed successfully")
+                {
+                    HttpContext.Session.Clear();
+                    LoginResponseModel result = JsonConvert.DeserializeObject<LoginResponseModel>(request);
+                    byte[] tokenInByte = Encoding.ASCII.GetBytes(result.Token);
 
-                LoginResponseModel result = JsonConvert.DeserializeObject<LoginResponseModel>(request);
+                    HttpContext.Session.Set("_Token", tokenInByte);
+                    HttpContext.Session.SetString("Role", result.Role);
+                    HttpContext.Session.SetString("Id", result.UserID);
+                    HttpContext.Session.SetString("UserName", _user.UserName);
+                    return RedirectToPage("./UserView");
 
-                byte[] tokenInByte = Encoding.ASCII.GetBytes(result.Token);
+                }
+                else
+                    return RedirectToPage("./UserView");
 
-                HttpContext.Session.Set("_Token", tokenInByte);
-                HttpContext.Session.SetString("Role", result.Role);
-                HttpContext.Session.SetString("Id", result.UserID);
-                HttpContext.Session.SetString("UserName", _user.UserName);
-
-                return RedirectToPage("./UserView");
             }
             if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
