@@ -226,7 +226,7 @@ namespace CSharpSnackisApp.Pages
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Token}");
 
-            HttpResponseMessage response = await _client.GetAsync($"UserAuth/userImageDelete");
+            HttpResponseMessage response = await _client.GetAsync($"UserAuth/userImageDelete{_user.Image}");
             string request = response.Content.ReadAsStringAsync().Result;
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
