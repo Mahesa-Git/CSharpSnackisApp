@@ -151,7 +151,7 @@ namespace CSharpSnackisApp.Pages
                 return Page();
             }
             else
-                return RedirectToPage("/Error");
+                return RedirectToPage("/index");
         }
         public async Task<IActionResult> OnPostPost()
         {
